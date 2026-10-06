@@ -1,0 +1,104 @@
+ion-content {
+  --background: #0d1117;
+}
+
+.empty-booking-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 100px);
+  padding: 1.5rem 1rem;
+  text-align: center;
+
+  /* Empty State Graphic Styling */
+  .illustration-wrapper {
+    position: relative;
+    width: 140px;
+    height: 120px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .drawer-box {
+      width: 100px;
+      height: 75px;
+      background: #1e2638;
+      border-radius: 8px;
+      position: relative;
+      border: 2px solid #2a354d;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+
+      .drawer-top {
+        width: 100%;
+        height: 18px;
+        background: #2a354d;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+      }
+
+      .drawer-body {
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+
+        .folder-tab {
+          width: 30px;
+          height: 6px;
+          background: #3b4866;
+          border-radius: 3px;
+        }
+
+        .folder-line {
+          width: 80%;
+          height: 3px;
+          background: #2a354d;
+          border-radius: 2px;
+
+          &.short {
+            width: 50%;
+          }
+        }
+      }
+    }
+
+    .speech-bubble {
+      position: absolute;
+      top: 0;
+      right: 10px;
+      background: #2a354d;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        color: #718096;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .empty-text {
+    font-size: 1.1rem;
+    color: #a0aec0;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+
+  .browse-btn {
+    --background: #c53030;
+    --border-radius: 8px;
+    --padding-start: 2rem;
+    --padding-end: 2rem;
+    font-weight: 600;
+    height: 44px;
+    text-transform: none;
+    margin-bottom: 4rem;
+  }
+}

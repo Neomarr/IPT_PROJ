@@ -1,0 +1,123 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Tours</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="tours-header">
+    <h1>Tours</h1>
+    <p>Choose a tour, view details, and reserve an available slot.</p>
+  </div>
+
+  <!-- Filter Card Container -->
+  <div class="filter-card">
+    <div class="filter-title">
+      <ion-icon name="funnel-outline"></ion-icon>
+      <h2>Search Tours</h2>
+    </div>
+
+    <!-- Search Field -->
+    <div class="field-group">
+      <ion-input
+        type="text"
+        placeholder="Search tours..."
+        [(ngModel)]="searchTerm"
+        class="custom-field">
+        <ion-icon name="search-outline" slot="end" class="search-icon"></ion-icon>
+      </ion-input>
+    </div>
+
+    <!-- Price Range Inputs -->
+    <label class="field-label">Price Range</label>
+    <div class="price-range-grid">
+      <ion-input
+        type="number"
+        placeholder="Minimum"
+        [(ngModel)]="minPrice"
+        class="custom-field">
+      </ion-input>
+      <ion-input
+        type="number"
+        placeholder="Maximum"
+        [(ngModel)]="maxPrice"
+        class="custom-field">
+      </ion-input>
+    </div>
+
+    <!-- Availability Dropdown -->
+    <label class="field-label">Availability</label>
+    <ion-select
+      [(ngModel)]="availability"
+      interface="popover"
+      class="custom-select">
+      <ion-select-option value="all">Any availability</ion-select-option>
+      <ion-select-option value="Available">Available</ion-select-option>
+      <ion-select-option value="Unavailable">Unavailable</ion-select-option>
+      <ion-select-option value="Under Maintenance">Under Maintenance</ion-select-option>
+    </ion-select>
+
+    <!-- Sort Dropdown -->
+    <ion-select
+      [(ngModel)]="sortBy"
+      interface="popover"
+      class="custom-select sort-select">
+      <ion-select-option value="newest">Recommended (Newest)</ion-select-option>
+      <ion-select-option value="oldest">Oldest</ion-select-option>
+      <ion-select-option value="price-low">Price: Low to High</ion-select-option>
+      <ion-select-option value="price-high">Price: High to Low</ion-select-option>
+      <ion-select-option value="name-az">Name: A - Z</ion-select-option>
+      <ion-select-option value="name-za">Name: Z - A</ion-select-option>
+    </ion-select>
+
+    <!-- Filter Action Buttons -->
+    <div class="filter-actions">
+      <ion-button color="danger" class="apply-btn" (click)="applyFilters()">
+        Apply Filters
+      </ion-button>
+      <ion-button fill="outline" class="clear-btn" (click)="clearFilters()">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Clear
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Tour List Cards -->
+  <div class="tour-list">
+    <ion-card class="tour-card" *ngFor="let tour of filteredTours">
+      <div class="card-image-wrapper">
+        <img [src]="tour.image" [alt]="tour.name" />
+        
+        <!-- Favorite Button -->
+        <button class="favorite-btn" (click)="toggleFavorite(tour)">
+          <ion-icon [name]="tour.isFavorite ? 'heart' : 'heart-outline'" [class.active]="tour.isFavorite"></ion-icon>
+        </button>
+
+        <!-- Status Badge -->
+        <ion-badge 
+          class="status-badge"
+          [class.available]="tour.status === 'Available'"
+          [class.unavailable]="tour.status === 'Unavailable'"
+          [class.maintenance]="tour.status === 'Under Maintenance'">
+          {{ tour.status }}
+        </ion-badge>
+      </div>
+
+      <div class="card-body">
+        <h3>{{ tour.name }}</h3>
+        <p class="price-label">Tour Price</p>
+        <div class="price-row">
+          <span class="price-amount">¥{{ tour.price | number:'1.2-2' }}</span>
+          
+          <!-- Route Button -->
+          <button class="arrow-btn" [routerLink]="['/products/product-detail', tour.id]">
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </ion-card>
+  </div>
+</ion-content>

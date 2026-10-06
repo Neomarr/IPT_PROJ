@@ -1,0 +1,87 @@
+ion-content {
+  --background: #0d1117;
+}
+
+.contact-container {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #ffffff;
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1.2rem;
+    color: #ffffff;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+
+    label {
+      display: block;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+
+      .required {
+        color: #e53e3e;
+      }
+    }
+
+    .custom-input {
+      --background: #161b22;
+      --color: #ffffff;
+      --placeholder-color: #4a5568;
+      --border-color: #21262d;
+      --border-radius: 8px;
+      font-size: 0.95rem;
+    }
+  }
+
+  .send-btn {
+    --background: #c53030;
+    --border-radius: 6px;
+    font-weight: 600;
+    margin-top: 1rem;
+    height: 44px;
+  }
+
+  .contact-info-section {
+    margin-top: 2rem;
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.9rem;
+      font-size: 1rem;
+      color: #ffffff;
+
+      ion-icon {
+        font-size: 1.2rem;
+        color: #a0aec0;
+      }
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 1.5rem;
+
+      ion-icon {
+        font-size: 1.6rem;
+        color: #ffffff;
+        cursor: pointer;
+      }
+    }
+  }
+}

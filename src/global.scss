@@ -1,37 +1,67 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
 
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* ==========================================================================
+   JDM Experience Custom Global Theme Overrides
+   ========================================================================== */
+
+:root {
+  --ion-background-color: #0d1117;
+  --ion-background-color-rgb: 13, 17, 23;
+
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+
+  --ion-item-background: #161b22;
+  --ion-toolbar-background: #0f1117;
+  --ion-toolbar-color: #ffffff;
+  
+  --ion-color-danger: #c53030;
+  --ion-color-danger-rgb: 197, 48, 48;
+  --ion-color-danger-contrast: #ffffff;
+}
+
+ion-content {
+  --background: #0d1117;
+  --color: #ffffff;
+}
+
+ion-card {
+  --background: #161b22;
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+ion-header {
+  ion-toolbar {
+    --background: #0f1117;
+    --color: #ffffff;
+    --border-color: #21262d;
+  }
+}
+
+ion-button {
+  --background: #c53030;
+  --border-radius: 6px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+p {
+  color: #a0aec0;
+  line-height: 1.6;
+}

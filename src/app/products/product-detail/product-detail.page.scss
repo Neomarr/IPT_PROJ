@@ -1,0 +1,109 @@
+ion-content {
+  --background: #0f1117;
+  color: #ffffff;
+}
+
+ion-toolbar {
+  --background: #0d1117;
+  --color: #ffffff;
+}
+
+.image-header {
+  position: relative;
+  width: 100%;
+  height: 260px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .status-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+
+    &.available {
+      background: #153e20;
+      color: #48bb78;
+    }
+  }
+}
+
+.details-container {
+  .title-row {
+    margin-bottom: 1.5rem;
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff;
+    }
+
+    .price {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #f56565;
+    }
+  }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    .spec-card {
+      background: #161c28;
+      border: 1px solid #212a3a;
+      border-radius: 10px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+
+      .label {
+        font-size: 0.75rem;
+        color: #718096;
+        margin-bottom: 0.25rem;
+      }
+
+      .value {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #ffffff;
+      }
+    }
+  }
+
+  .section {
+    margin-bottom: 2rem;
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+
+    p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
+
+  .booking-bar {
+    margin-top: 1rem;
+
+    ion-button {
+      --border-radius: 10px;
+      font-weight: 700;
+    }
+  }
+}

@@ -1,0 +1,27 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Developers</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="header-section">
+    <h1>Group 6 Team</h1>
+    <p>IT 005 Integrative Programming & Technologies</p>
+  </div>
+
+  <ion-card *ngFor="let dev of developers" class="dev-card">
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img [src]="dev.avatar" [alt]="dev.name" />
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ dev.name }}</h2>
+        <p>{{ dev.program }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-card>
+</ion-content>

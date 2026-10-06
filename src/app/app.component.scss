@@ -1,0 +1,134 @@
+/* Dark Toolbar Styling */
+.dark-toolbar {
+  --background: #182030;
+  --color: #ffffff;
+  --border-color: transparent;
+  padding: 0 4px;
+
+  ion-menu-button {
+    --color: #ffffff;
+  }
+}
+
+/* Header Brand Layout (Logo + Title) */
+.header-brand-slot, .logo-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .app-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    margin-left: 8px;
+  }
+
+  ion-title {
+    padding: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #ffffff;
+  }
+}
+
+/* Side Menu Customization */
+ion-menu {
+  --background: #182030;
+
+  ion-header,
+  ion-toolbar {
+    --background: #182030;
+    --color: #ffffff;
+  }
+
+  ion-content {
+    --background: #182030;
+  }
+
+  .menu-search-container {
+    padding: 0.5rem 1rem 1rem 1rem;
+  }
+
+  .custom-searchbar {
+    --background: #111622;
+    --color: #ffffff;
+    --placeholder-color: #718096;
+    --icon-color: #718096;
+    --border-radius: 8px;
+    padding: 0;
+  }
+
+  ion-list {
+    background: transparent;
+    padding: 0 0.8rem;
+  }
+
+  ion-item {
+    --background: transparent;
+    --color: #a0aec0;
+    --border-color: transparent;
+    --border-radius: 8px;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+
+    ion-icon {
+      color: #a0aec0;
+    }
+
+    &.active-item {
+      --background: #c53030;
+      --color: #ffffff;
+
+      ion-icon {
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+/* Navbar Profile Pill Button */
+.profile-pill-btn {
+  --background: #111622;
+  --border-radius: 20px;
+  --color: #ffffff;
+  text-transform: none;
+  font-size: 0.85rem;
+  margin-right: 8px;
+
+  ion-icon {
+    font-size: 1.3rem;
+    color: #a0aec0;
+  }
+}
+
+/* Popover Dropdown */
+.custom-profile-popover {
+  --background: #182030;
+  --width: 210px;
+
+  ion-list {
+    background: transparent;
+    padding: 6px 0;
+  }
+
+  ion-item {
+    --background: transparent;
+    --color: #e2e8f0;
+    --min-height: 40px;
+    font-size: 0.9rem;
+
+    &:hover {
+      --background: #252e3e;
+    }
+  }
+
+  .popover-divider {
+    height: 1px;
+    background: #2d3748;
+    margin: 6px 0;
+  }
+
+  .logout-item {
+    --color: #e53e3e;
+  }
+}

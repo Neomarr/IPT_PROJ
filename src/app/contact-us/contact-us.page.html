@@ -1,0 +1,77 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Contact Us</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="contact-container">
+    <h1>Send Us a Message</h1>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label><span class="required">*</span> Name</label>
+        <ion-input 
+          type="text" 
+          placeholder="Your Name" 
+          fill="outline" 
+          class="custom-input">
+        </ion-input>
+      </div>
+
+      <div class="form-group">
+        <label><span class="required">*</span> Email</label>
+        <ion-input 
+          type="email" 
+          placeholder="Your Email" 
+          fill="outline" 
+          class="custom-input">
+        </ion-input>
+      </div>
+
+      <div class="form-group">
+        <label><span class="required">*</span> Message</label>
+        <ion-textarea 
+          placeholder="Your Message" 
+          fill="outline" 
+          [rows]="5" 
+          class="custom-input">
+        </ion-textarea>
+      </div>
+
+      <ion-button color="danger" type="submit" class="send-btn">Send Message</ion-button>
+    </form>
+
+    <div class="contact-info-section">
+      <h2>Contact Information</h2>
+      
+      <div class="info-item">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>Tokyo</span>
+      </div>
+
+      <div class="info-item">
+        <ion-icon name="call-outline"></ion-icon>
+        <span>+819060804777</span>
+      </div>
+
+      <div class="info-item">
+        <ion-icon name="mail-outline"></ion-icon>
+        <span>jkonagi0410@gmail.com</span>
+      </div>
+
+      <div class="info-item">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>Mon - Sun: 9AM - 6PM</span>
+      </div>
+
+      <div class="social-links">
+        <ion-icon name="logo-instagram"></ion-icon>
+        <ion-icon name="logo-tiktok"></ion-icon>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,25 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Our Services</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="header-section">
+    <h1>What We Offer</h1>
+    <p>Premium sports car tours and customer-first services.</p>
+  </div>
+
+  <ion-card *ngFor="let service of services" class="service-card">
+    <ion-card-header>
+      <ion-icon [name]="service.icon" class="service-icon"></ion-icon>
+      <ion-card-title>{{ service.title }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ service.description }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

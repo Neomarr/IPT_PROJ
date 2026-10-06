@@ -1,20 +1,154 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>
-      Blank
+      <img src="assets/logo.png" alt="JDM Experience Logo" class="header-logo" />
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- 1. Hero Section -->
+  <section class="hero-section text-center ion-padding">
+    <div class="hero-content">
+      <h1>Japan JDM<br>Experience<br>Tours</h1>
+      <p>Book guided JDM tours by date for city errands, business trips, and weekend drives.</p>
+      <ion-button color="danger" routerLink="/products" class="cta-btn">Browse Tours</ion-button>
+    </div>
+  </section>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <!-- 2. Featured Tours Carousel Section -->
+  <section class="featured-section ion-padding">
+    <h2>Featured Tours</h2>
+    <p class="subtitle">All vehicles are managed through the existing tour fleet system.</p>
+
+    <div class="featured-card">
+      <div class="card-image-wrapper">
+        <img [src]="currentTour.image" [alt]="currentTour.name" />
+        <ion-badge
+          class="status-badge"
+          [class.available]="currentTour.status === 'Available'"
+          [class.unavailable]="currentTour.status === 'Unavailable'"
+          [class.maintenance]="currentTour.status === 'Under Maintenance'">
+          {{ currentTour.status }}
+        </ion-badge>
+      </div>
+
+      <div class="card-details">
+        <h2>{{ currentTour.name }}</h2>
+        <p class="price">¥{{ currentTour.price | number:'1.2-2' }}</p>
+        <p class="description">{{ currentTour.description }}</p>
+
+        <ion-button 
+  color="danger" 
+  [routerLink]="['/products/product-detail', currentTour.id]" 
+  class="view-btn">
+  VIEW DETAILS
+</ion-button>
+      </div>
+
+      <!-- Navigation Controls -->
+      <div class="carousel-controls">
+        <button class="nav-btn" (click)="prevTour()" aria-label="Previous Tour">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </button>
+        <button class="nav-btn" (click)="nextTour()" aria-label="Next Tour">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Features Grid & Plan Your Trip -->
+  <section class="features-section ion-padding">
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon"><ion-icon name="calendar-outline"></ion-icon></div>
+        <h3>Date-Based Booking</h3>
+        <p>Pick a tour date and the system checks availability automatically.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon green"><ion-icon name="car-outline"></ion-icon></div>
+        <h3>Flexible Fleet</h3>
+        <p>Browse tours using existing vehicle type categories and tour prices.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon yellow"><ion-icon name="time-outline"></ion-icon></div>
+        <h3>JST Cut-Off</h3>
+        <p>Same-day reservations close after 5:00 PM Japan Standard Time.</p>
+      </div>
+    </div>
+
+    <!-- Plan Your Trip Container -->
+    <div class="plan-trip-header text-center">
+      <h2>Plan Your Trip</h2>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Pricing Card -->
+      <div class="feature-card-box">
+        <div class="card-icon red-icon"><ion-icon name="logo-yen"></ion-icon></div>
+        <h3>Pricing in JPY</h3>
+        <p>All tours are priced in Japanese Yen — see an estimated conversion on any tour page.</p>
+      </div>
+
+      <!-- Booking Cut-Off Card -->
+      <div class="feature-card-box">
+        <div class="card-icon red-icon"><ion-icon name="time-outline"></ion-icon></div>
+        <h3>Booking Cut-Off</h3>
+        <p>Same-day requests must be placed before 5:00 PM JST — plan ahead for evening drives.</p>
+      </div>
+
+      <!-- Tokyo Weather Card -->
+      <div class="feature-card-box">
+        <div class="card-icon red-icon"><ion-icon name="location-outline"></ion-icon></div>
+        <h3>Tokyo Weather</h3>
+        <p>Check the forecast for your tour date before you head out.</p>
+        <a routerLink="/weather" class="forecast-link">View forecast &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Your Tokyo Route -->
+  <section class="route-section ion-padding">
+    <div class="route-header">
+      <ion-icon name="compass-outline"></ion-icon>
+      <h2>Your Tokyo Route</h2>
+    </div>
+    <p class="route-desc">Every tour follows the same iconic pickup-to-drop-off route through Tokyo's car culture landmarks — here's what to expect before you book.</p>
+
+    <ol class="route-list">
+      <li>Pickup — Tokyo</li>
+      <li>A-PIT Super Autobacs</li>
+      <li>Metropolitan Expressway Bayshore Route</li>
+      <li>Daikoku Parking Area</li>
+      <li>Rainbow Bridge</li>
+      <li>Tokyo Tower</li>
+    </ol>
+
+    <ion-button color="danger" routerLink="/products" class="route-btn">Book This Route</ion-button>
+
+    <div class="map-container ion-margin-top">
+      <h3>Tour Itinerary</h3>
+      <div class="map-placeholder">
+        <div class="map-zoom-controls">
+          <button>+</button>
+          <button>-</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Call to Action & Footer -->
+  <section class="cta-banner ion-padding text-center">
+    <h2>Ready for your own JDM night drive?</h2>
+    <div class="cta-actions">
+      <ion-button color="danger" routerLink="/products">Browse Tours</ion-button>
+      <ion-button fill="clear" color="light" routerLink="/about-app">Learn more about our tours</ion-button>
+    </div>
+  </section>
 </ion-content>

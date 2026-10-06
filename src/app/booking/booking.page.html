@@ -1,0 +1,36 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Booking</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="empty-booking-container">
+    <!-- Empty State Graphic -->
+    <div class="illustration-wrapper">
+      <div class="drawer-box">
+        <div class="drawer-top"></div>
+        <div class="drawer-body">
+          <div class="folder-tab"></div>
+          <div class="folder-line"></div>
+          <div class="folder-line short"></div>
+        </div>
+      </div>
+      <div class="speech-bubble">
+        <ion-icon name="chatbubble-ellipses"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Message & CTA -->
+    <p class="empty-text">You have no reservations yet.</p>
+    
+    <ion-button routerLink="/products" routerDirection="forward" class="browse-btn">
+      Browse Tours
+    </ion-button>
+
+   
+  </div>
+</ion-content>

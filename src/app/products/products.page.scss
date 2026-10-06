@@ -1,0 +1,240 @@
+.tours-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+}
+
+/* Filter Box Container */
+.filter-card {
+  background: #161c28;
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  border: 1px solid #212a3a;
+
+  .filter-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    ion-icon {
+      font-size: 1.2rem;
+      color: #ffffff;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+    }
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: 0.8rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .custom-field {
+    --background: #0f141d;
+    --color: #ffffff;
+    --placeholder-color: #64748b;
+    --border-color: #212a3a;
+    --border-radius: 8px;
+    --padding-start: 12px;
+    font-size: 0.9rem;
+    min-height: 44px;
+
+    .search-icon {
+      color: #64748b;
+      margin-end: 8px;
+    }
+  }
+
+  .price-range-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .custom-select {
+    --background: #0f141d;
+    --color: #ffffff;
+    --placeholder-color: #ffffff;
+    --border-color: #c53030;
+    --border-radius: 8px;
+    border: 1px solid #c53030;
+    padding-left: 12px;
+    min-height: 44px;
+    margin-top: 0.4rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+
+    &.sort-select {
+      margin-top: 1rem;
+      border-color: #212a3a;
+    }
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+
+    .apply-btn {
+      flex: 1;
+      --background: #c53030;
+      --border-radius: 8px;
+      font-weight: 600;
+      height: 44px;
+    }
+
+    .clear-btn {
+      flex: 1;
+      --border-color: #212a3a;
+      --color: #94a3b8;
+      --background: #1a2230;
+      --border-radius: 8px;
+      height: 44px;
+    }
+  }
+}
+
+/* Tour Card List Styling */
+.tour-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tour-card {
+  background: #161c28;
+  border-radius: 14px;
+  margin: 0;
+  box-shadow: none;
+  border: 1px solid #212a3a;
+  overflow: hidden;
+
+  .card-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 220px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .favorite-btn {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(15, 20, 29, 0.75);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      ion-icon {
+        color: #ffffff;
+        font-size: 1.1rem;
+
+        &.active {
+          color: #e53e3e;
+        }
+      }
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+
+      &.available {
+        background: #153e20;
+        color: #48bb78;
+      }
+
+      &.unavailable {
+        background: #4a1515;
+        color: #f56565;
+      }
+
+      &.maintenance {
+        background: #4a3815;
+        color: #ecc94b;
+      }
+    }
+  }
+
+  .card-body {
+    padding: 1.25rem;
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .price-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .price-amount {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #ffffff;
+      }
+
+      .arrow-btn {
+        background: #212a3a;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        ion-icon {
+          color: #ffffff;
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+}

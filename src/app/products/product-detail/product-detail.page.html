@@ -1,0 +1,56 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" color="light"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Tour Details</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()">
+        <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'" [color]="isFavorite ? 'danger' : 'light'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="image-header">
+    <img [src]="tour.image" [alt]="tour.name" />
+    <ion-badge class="status-badge" [class.available]="tour.status === 'Available'">
+      {{ tour.status }}
+    </ion-badge>
+  </div>
+
+  <div class="details-container ion-padding">
+    <div class="title-row">
+      <h1>{{ tour.name }}</h1>
+      <div class="price">¥{{ tour.price | number:'1.2-2' }}</div>
+    </div>
+
+    <!-- Specifications Grid -->
+    <div class="specs-grid">
+      <div class="spec-card">
+        <span class="label">Engine</span>
+        <span class="value">{{ tour.specs.engine }}</span>
+      </div>
+      <div class="spec-card">
+        <span class="label">Gearbox</span>
+        <span class="value">{{ tour.specs.transmission }}</span>
+      </div>
+      <div class="spec-card">
+        <span class="label">Seats</span>
+        <span class="value">{{ tour.specs.seats }} Persons</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>About This Experience</h3>
+      <p>{{ tour.description }}</p>
+    </div>
+
+    <div class="booking-bar">
+      <ion-button color="danger" expand="block" size="large" routerLink="/booking">
+        Book Tour Now
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

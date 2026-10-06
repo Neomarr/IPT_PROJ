@@ -1,0 +1,55 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="header-spacer-toolbar"></ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="false" class="profile-content">
+  <div class="profile-container">
+    <ion-card class="profile-card">
+      <ion-card-content>
+        <h2 class="title text-center">My Profile</h2>
+
+        <form (ngSubmit)="saveProfile()">
+          <!-- Full Name -->
+          <div class="form-group">
+            <label><span class="required">*</span> Full Name</label>
+            <ion-input 
+              type="text" 
+              [(ngModel)]="fullName" 
+              name="fullName" 
+              class="custom-input">
+            </ion-input>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label>Email</label>
+            <ion-input 
+              type="email" 
+              [(ngModel)]="email" 
+              name="email" 
+              [readonly]="true" 
+              class="custom-input readonly">
+            </ion-input>
+            <span class="sub-text">Managed by your sign-in provider.</span>
+          </div>
+
+          <!-- Phone -->
+          <div class="form-group">
+            <label>Phone</label>
+            <ion-input 
+              type="tel" 
+              [(ngModel)]="phone" 
+              name="phone" 
+              class="custom-input">
+            </ion-input>
+          </div>
+
+          <!-- Save Button -->
+          <ion-button type="submit" expand="block" color="danger" class="save-btn">
+            Save Changes
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
