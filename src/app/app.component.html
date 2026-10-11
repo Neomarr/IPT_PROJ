@@ -1,126 +1,109 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
-    
-    <!-- Side Menu -->
-    <ion-menu contentId="main-content" menuId="main-menu">
-      <ion-header class="ion-no-border">
-        <ion-toolbar class="dark-toolbar">
-          <div class="logo-title-container">
-            <img src="assets/logo.png" alt="JDM Logo" class="app-logo" />
-            <ion-title>JDM Experience</ion-title>
+  <!-- Side Menu Drawer -->
+  <ion-menu contentId="main-content" menuId="main-menu">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="custom-navbar">
+        <ion-title class="menu-header-title">Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="menu-content">
+      <ion-list lines="none" class="menu-list">
+        <ion-menu-toggle autoHide="false">
+          <ion-item button routerLink="/home">
+            <ion-icon name="home-outline" slot="start"></ion-icon>
+            <ion-label>Home</ion-label>
+          </ion-item>
+          <ion-item button routerLink="/products">
+            <ion-icon name="car-outline" slot="start"></ion-icon>
+            <ion-label>Tours / Products</ion-label>
+          </ion-item>
+          <ion-item button routerLink="/booking">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            <ion-label>Booking</ion-label>
+          </ion-item>
+          <ion-item button routerLink="/company-history">
+            <ion-icon name="business-outline" slot="start"></ion-icon>
+            <ion-label>Company History</ion-label>
+          </ion-item>
+          <ion-item button routerLink="/about-services">
+            <ion-icon name="construct-outline" slot="start"></ion-icon>
+            <ion-label>Services</ion-label>
+          </ion-item>
+          <ion-item button routerLink="/developers">
+            <ion-icon name="code-slash-outline" slot="start"></ion-icon>
+            <ion-label>Developers</ion-label>
+          </ion-item>
+          <ion-item button routerLink="/about-app">
+            <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+            <ion-label>About App</ion-label>
+          </ion-item>
+          <ion-item button routerLink="/contact-us">
+            <ion-icon name="call-outline" slot="start"></ion-icon>
+            <ion-label>Contact Us</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Main View Area -->
+  <div class="ion-page" id="main-content">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="custom-navbar">
+        <!-- Hamburger Menu Button with auto-hide set to false -->
+        <ion-buttons slot="start">
+          <ion-menu-button [autoHide]="false" class="hamburger-btn"></ion-menu-button>
+        </ion-buttons>
+
+        <!-- Brand Logo -->
+        <ion-title>
+          <div class="logo-container" routerLink="/products">
+            <img src="assets/logo.png" alt="JDM Experience Logo" class="nav-logo" />
           </div>
-        </ion-toolbar>
-      </ion-header>
+        </ion-title>
 
-      <ion-content>
-        <!-- Search Bar -->
-        <div class="menu-search-container">
-          <ion-searchbar 
-            placeholder="Search tours..." 
-            search-icon="search-outline"
-            show-clear-button="never"
-            class="custom-searchbar">
-          </ion-searchbar>
-        </div>
+        <!-- Profile Popover Trigger -->
+        <ion-buttons slot="end">
+          <ion-button id="profile-popover-trigger" class="profile-btn">
+            <ion-icon name="person-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
 
-        <!-- Navigation List -->
-        <ion-list lines="none" class="menu-list">
-          <ion-menu-toggle auto-hide="false">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
 
-            <ion-item routerLink="/home" routerDirection="root" routerLinkActive="active-item">
-              <ion-icon name="home-outline" slot="start"></ion-icon>
-              <ion-label>Home</ion-label>
+  <!-- Profile Dropdown Popover -->
+  <ion-popover trigger="profile-popover-trigger" dismissOnSelect="true" #profilePopover class="dark-popover">
+    <ng-template>
+      <ion-content class="popover-content">
+        <ng-container *ngIf="(auth.isAuthenticated$ | async); else guestMenu">
+          <ion-list lines="none" class="popover-list">
+            <ion-item button routerLink="/booking" (click)="profilePopover.dismiss()">
+              <ion-label>My Reservations</ion-label>
             </ion-item>
-
-            <ion-item routerLink="/products" routerDirection="root" routerLinkActive="active-item">
-              <ion-icon name="car-outline" slot="start"></ion-icon>
-              <ion-label>Our Vehicles / Tours</ion-label>
+            <ion-item button routerLink="/products" (click)="profilePopover.dismiss()">
+              <ion-label>My Wishlist</ion-label>
             </ion-item>
-
-            <ion-item routerLink="/booking" routerDirection="root" routerLinkActive="active-item">
-              <ion-icon name="calendar-outline" slot="start"></ion-icon>
-              <ion-label>Booking</ion-label>
+            <ion-item button routerLink="/login" (click)="profilePopover.dismiss()">
+              <ion-label>My Profile</ion-label>
             </ion-item>
-
-            <ion-item routerLink="/company-history" routerDirection="root" routerLinkActive="active-item">
-              <ion-icon name="business-outline" slot="start"></ion-icon>
-              <ion-label>Company History</ion-label>
+            <ion-item button (click)="logout(profilePopover)" class="logout-item">
+              <ion-label color="danger">Logout</ion-label>
             </ion-item>
+          </ion-list>
+        </ng-container>
 
-            <ion-item routerLink="/about-services" routerDirection="root" routerLinkActive="active-item">
-              <ion-icon name="construct-outline" slot="start"></ion-icon>
-              <ion-label>Our Services</ion-label>
+        <ng-template #guestMenu>
+          <ion-list lines="none" class="popover-list">
+            <ion-item button routerLink="/login" (click)="profilePopover.dismiss()">
+              <ion-label>Sign In / Register</ion-label>
             </ion-item>
-
-            <ion-item routerLink="/developers" routerDirection="root" routerLinkActive="active-item">
-              <ion-icon name="code-slash-outline" slot="start"></ion-icon>
-              <ion-label>Developers</ion-label>
-            </ion-item>
-
-            <ion-item routerLink="/about-app" routerDirection="root" routerLinkActive="active-item">
-              <ion-icon name="information-circle-outline" slot="start"></ion-icon>
-              <ion-label>About the App</ion-label>
-            </ion-item>
-
-            <ion-item routerLink="/contact-us" routerDirection="root" routerLinkActive="active-item">
-              <ion-icon name="call-outline" slot="start"></ion-icon>
-              <ion-label>Contact Us</ion-label>
-            </ion-item>
-
-          </ion-menu-toggle>
-        </ion-list>
+          </ion-list>
+        </ng-template>
       </ion-content>
-    </ion-menu>
-
-    <!-- Main App Content Router -->
-    <div class="ion-page" id="main-content">
-      <!-- Main Top Header -->
-      <ion-header class="ion-no-border">
-        <ion-toolbar class="dark-toolbar">
-          <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-
-          <!-- Logo & Title -->
-          <div class="header-brand-slot">
-            <img src="assets/logo.png" alt="JDM Logo" class="app-logo" />
-            
-          </div>
-
-          <!-- Top Right Profile Dropdown Pill -->
-          <ion-buttons slot="end">
-  <ion-button id="profile-popover-button" class="profile-avatar-btn">
-    <ion-icon name="person-outline"></ion-icon>
-  </ion-button>
-</ion-buttons>
-
-          <!-- Popover Menu -->
-          <ion-popover trigger="profile-popover-button" dismissOnSelect="true" class="custom-profile-popover">
-            <ng-template>
-              <ion-content class="popover-content">
-                <ion-list lines="none" class="popover-list">
-                  <ion-item button routerLink="/reservations">
-                    <ion-label>My Reservations</ion-label>
-                  </ion-item>
-                  <ion-item button routerLink="/wishlist">
-                    <ion-label>My Wishlist</ion-label>
-                  </ion-item>
-                  <ion-item button routerLink="/profile">
-                    <ion-label>My Profile</ion-label>
-                  </ion-item>
-                  <div class="popover-divider"></div>
-                  <ion-item button class="logout-item">
-                    <ion-label>Logout</ion-label>
-                  </ion-item>
-                </ion-list>
-              </ion-content>
-            </ng-template>
-          </ion-popover>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-router-outlet></ion-router-outlet>
-    </div>
-
-  </ion-split-pane>
+    </ng-template>
+  </ion-popover>
 </ion-app>

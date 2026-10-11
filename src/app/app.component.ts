@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, OnInit, NgZone, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { 
   IonApp, 
   IonRouterOutlet, 
-  IonSplitPane, 
-  IonMenu, 
   IonHeader, 
   IonToolbar, 
   IonTitle, 
@@ -13,12 +12,12 @@ import {
   IonItem, 
   IonIcon, 
   IonLabel, 
-  IonMenuToggle, 
-  IonSearchbar,
-  IonButtons,
-  IonButton,
+  IonButtons, 
+  IonButton, 
   IonPopover,
-  IonMenuButton
+  IonMenuButton,
+  IonMenu,
+  IonMenuToggle
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { 
@@ -31,8 +30,13 @@ import {
   informationCircleOutline, 
   callOutline, 
   searchOutline,
-  personOutline
+  personOutline,
+  bookmarkOutline,
+  logOutOutline
 } from 'ionicons/icons';
+import { App } from '@capacitor/app';
+import { AuthService } from '@auth0/auth0-angular';
+import { Browser } from '@capacitor/browser';
 
 @Component({
   selector: 'app-root',
@@ -40,29 +44,31 @@ import {
   styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
-    RouterLink,
-    RouterLinkActive,
-    IonApp,
-    IonRouterOutlet,
-    IonSplitPane,
-    IonMenu,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonItem,
-    IonIcon,
-    IonLabel,
-    IonMenuToggle,
-    IonSearchbar,
-    IonButtons,
-    IonButton,
-    IonPopover,
-    IonMenuButton
-  ]
+  CommonModule,
+  RouterLink,
+  IonApp,
+  IonRouterOutlet,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonList,
+  IonItem,
+  IonIcon,
+  IonLabel,
+  IonButtons,
+  IonButton,
+  IonPopover,
+  IonMenuButton,
+  IonMenu,
+  IonMenuToggle
+]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  public auth = inject(AuthService);
+  private ngZone = inject(NgZone);
+  private router = inject(Router);
+
   constructor() {
     addIcons({
       'home-outline': homeOutline,
@@ -74,7 +80,37 @@ export class AppComponent {
       'information-circle-outline': informationCircleOutline,
       'call-outline': callOutline,
       'search-outline': searchOutline,
-      'person-outline': personOutline
+      'person-outline': personOutline,
+      'bookmark-outline': bookmarkOutline,
+      'log-out-outline': logOutOutline
+    });
+  }
+
+  ngOnInit() {
+    App.addListener('appUrlOpen', (event) => {
+      this.ngZone.run(() => {
+        if (event.url.includes('state=') && (event.url.includes('code=') || event.url.includes('error='))) {
+          this.auth.handleRedirectCallback(event.url).subscribe({
+            next: () => {
+              Browser.close();
+              this.router.navigate(['/login']);
+            },
+            error: (err) => {
+              Browser.close();
+              console.error('Auth0 Redirect Error:', err);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  logout(popover: any) {
+    popover.dismiss();
+    this.auth.logout({
+      logoutParams: {
+        returnTo: window.location.origin
+      }
     });
   }
 }

@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
   supabaseUrl: 'https://mumokssahdwryyxdauoz.supabase.co',
-  supabaseKey: 'sb_publishable_ttsUVS9LXgnmnpu9cLLNTw_cTkFQPtb'
+  supabaseKey: 'sb_publishable_ttsUVS9LXgnmnpu9cLLNTw_cTkFQPtb',
+  auth0Domain: 'dev-tt0hq6gyqbf8bezl.jp.auth0.com',
+  auth0ClientId: 'xYwffAlzJzzDM6LJ9k0Md0Xern4EPx1m'
 };
 
 /*

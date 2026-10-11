@@ -1,134 +1,94 @@
-/* Dark Toolbar Styling */
-.dark-toolbar {
-  --background: #182030;
+// Custom Navbar Dark Styling
+.custom-navbar {
+  --background: #0b0e14;
   --color: #ffffff;
-  --border-color: transparent;
+  --border-bottom: 1px solid #1f293d;
   padding: 0 4px;
-
-  ion-menu-button {
-    --color: #ffffff;
-  }
 }
 
-/* Header Brand Layout (Logo + Title) */
-.header-brand-slot, .logo-title-container {
+// Force Hamburger Icon & Profile Icon to render in white
+.hamburger-btn, .profile-btn {
+  --color: #ffffff !important;
+  color: #ffffff !important;
+}
+
+.logo-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  cursor: pointer;
 
-  .app-logo {
-    height: 32px;
+  .nav-logo {
+    height: 38px;
     width: auto;
     object-fit: contain;
-    margin-left: 8px;
-  }
-
-  ion-title {
-    padding: 0;
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #ffffff;
   }
 }
 
-/* Side Menu Customization */
+// Side Menu Styling
 ion-menu {
-  --background: #182030;
+  --background: #0b0e14;
 
-  ion-header,
-  ion-toolbar {
-    --background: #182030;
-    --color: #ffffff;
+  .menu-content {
+    --background: #0b0e14;
   }
 
-  ion-content {
-    --background: #182030;
+  .menu-header-title {
+    color: #ffffff;
+    font-weight: 600;
   }
 
-  .menu-search-container {
-    padding: 0.5rem 1rem 1rem 1rem;
-  }
+  .menu-list {
+    background: #0b0e14;
+    padding-top: 1rem;
 
-  .custom-searchbar {
-    --background: #111622;
-    --color: #ffffff;
-    --placeholder-color: #718096;
-    --icon-color: #718096;
-    --border-radius: 8px;
-    padding: 0;
-  }
-
-  ion-list {
-    background: transparent;
-    padding: 0 0.8rem;
-  }
-
-  ion-item {
-    --background: transparent;
-    --color: #a0aec0;
-    --border-color: transparent;
-    --border-radius: 8px;
-    margin-bottom: 0.3rem;
-    font-weight: 500;
-
-    ion-icon {
-      color: #a0aec0;
-    }
-
-    &.active-item {
-      --background: #c53030;
-      --color: #ffffff;
+    ion-item {
+      --background: #0b0e14;
+      --color: #cbd5e1;
+      --background-hover: #161b22;
+      --border-radius: 8px;
+      margin: 4px 8px;
 
       ion-icon {
-        color: #ffffff;
+        color: #ef4444; // JDM Red accent icon color
+        margin-right: 12px;
+      }
+
+      ion-label {
+        font-size: 0.95rem;
+        font-weight: 500;
       }
     }
   }
 }
 
-/* Navbar Profile Pill Button */
-.profile-pill-btn {
-  --background: #111622;
-  --border-radius: 20px;
-  --color: #ffffff;
-  text-transform: none;
-  font-size: 0.85rem;
-  margin-right: 8px;
+// Profile Popover Styling
+.dark-popover {
+  --background: #121824;
+  --width: 200px;
 
-  ion-icon {
-    font-size: 1.3rem;
-    color: #a0aec0;
+  ion-content {
+    --background: #121824;
   }
 }
 
-/* Popover Dropdown */
-.custom-profile-popover {
-  --background: #182030;
-  --width: 210px;
-
-  ion-list {
-    background: transparent;
-    padding: 6px 0;
-  }
+.popover-list {
+  background: #121824;
+  padding: 8px 0;
 
   ion-item {
-    --background: transparent;
-    --color: #e2e8f0;
-    --min-height: 40px;
-    font-size: 0.9rem;
+    --background: #121824;
+    --color: #ffffff;
+    --background-hover: #1f293d;
+    --min-height: 44px;
 
-    &:hover {
-      --background: #252e3e;
+    ion-label {
+      font-weight: 500;
+      font-size: 0.95rem;
     }
   }
 
-  .popover-divider {
-    height: 1px;
-    background: #2d3748;
-    margin: 6px 0;
-  }
-
   .logout-item {
-    --color: #e53e3e;
+    border-top: 1px solid #1f293d;
+    margin-top: 4px;
   }
 }
