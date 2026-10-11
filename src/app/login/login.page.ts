@@ -66,14 +66,12 @@ export class LoginPage implements OnInit {
     try {
       this.isLoadingProfile = true;
 
-      // 1. Try finding by auth0_sub
       let { data } = await this.supabaseService.client
         .from('users')
         .select('*')
         .eq('auth0_sub', authUser.sub)
         .maybeSingle();
 
-      // 2. Fallback: try finding by email
       if (!data && authUser.email) {
         const { data: emailMatch } = await this.supabaseService.client
           .from('users')
@@ -123,7 +121,6 @@ export class LoginPage implements OnInit {
       const now = new Date().toISOString();
 
       if (this.supabaseUser?.user_id) {
-        // Update existing user by user_id
         const updatePayload: any = {
           full_name: this.fullName,
           updated_at: now
@@ -143,7 +140,6 @@ export class LoginPage implements OnInit {
         alert('Profile updated successfully!');
         if (data && data.length > 0) this.supabaseUser = data[0];
       } else {
-        // Insert new user row with timestamps
         const insertPayload: any = {
           email: authUser.email,
           auth0_sub: authUser.sub,

@@ -1,6 +1,7 @@
-import { Component, OnInit, NgZone, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit, NgZone, inject, ViewChild } from '@angular/core';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs/operators';
 import { 
   IonApp, 
   IonRouterOutlet, 
@@ -44,30 +45,34 @@ import { Browser } from '@capacitor/browser';
   styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
-  CommonModule,
-  RouterLink,
-  IonApp,
-  IonRouterOutlet,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
-  IonIcon,
-  IonLabel,
-  IonButtons,
-  IonButton,
-  IonPopover,
-  IonMenuButton,
-  IonMenu,
-  IonMenuToggle
-]
+    CommonModule,
+    RouterLink,
+    IonApp,
+    IonRouterOutlet,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonItem,
+    IonIcon,
+    IonLabel,
+    IonButtons,
+    IonButton,
+    IonPopover,
+    IonMenuButton,
+    IonMenu,
+    IonMenuToggle
+  ]
 })
 export class AppComponent implements OnInit {
+  @ViewChild('profilePopover') profilePopover!: IonPopover;
+
   public auth = inject(AuthService);
   private ngZone = inject(NgZone);
   private router = inject(Router);
+
+  isSplashScreen: boolean = false;
 
   constructor() {
     addIcons({
@@ -84,6 +89,13 @@ export class AppComponent implements OnInit {
       'bookmark-outline': bookmarkOutline,
       'log-out-outline': logOutOutline
     });
+
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      const currentUrl = event.urlAfterRedirects || event.url;
+      this.isSplashScreen = currentUrl === '/splash';
+    });
   }
 
   ngOnInit() {
@@ -93,7 +105,7 @@ export class AppComponent implements OnInit {
           this.auth.handleRedirectCallback(event.url).subscribe({
             next: () => {
               Browser.close();
-              this.router.navigate(['/login']);
+              this.router.navigate(['/products']);
             },
             error: (err) => {
               Browser.close();
@@ -103,6 +115,13 @@ export class AppComponent implements OnInit {
         }
       });
     });
+  }
+
+  presentProfilePopover(event: Event) {
+    if (this.profilePopover) {
+      this.profilePopover.event = event;
+      this.profilePopover.present();
+    }
   }
 
   logout(popover: any) {

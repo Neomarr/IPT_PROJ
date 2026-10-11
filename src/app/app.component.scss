@@ -6,10 +6,14 @@
   padding: 0 4px;
 }
 
-// Force Hamburger Icon & Profile Icon to render in white
+// Force Hamburger Icon & Profile Icon to render cleanly in white
 .hamburger-btn, .profile-btn {
   --color: #ffffff !important;
   color: #ffffff !important;
+  --background: transparent !important;
+  --box-shadow: none !important;
+  pointer-events: auto !important;
+  z-index: 999 !important;
 }
 
 .logo-container {
@@ -49,7 +53,7 @@ ion-menu {
       margin: 4px 8px;
 
       ion-icon {
-        color: #ef4444; // JDM Red accent icon color
+        color: #ef4444;
         margin-right: 12px;
       }
 

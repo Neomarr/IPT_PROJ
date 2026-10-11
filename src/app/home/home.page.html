@@ -1,14 +1,3 @@
-<ion-header [translucent]="true" class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>
-      <img src="assets/logo.png" alt="JDM Experience Logo" class="header-logo" />
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
   <!-- 1. Hero Section -->
   <section class="hero-section text-center ion-padding">
@@ -42,11 +31,11 @@
         <p class="description">{{ currentTour.description }}</p>
 
         <ion-button 
-  color="danger" 
-  [routerLink]="['/products/product-detail', currentTour.id]" 
-  class="view-btn">
-  VIEW DETAILS
-</ion-button>
+          color="danger" 
+          [routerLink]="['/products/product-detail', currentTour.id]" 
+          class="view-btn">
+          VIEW DETAILS
+        </ion-button>
       </div>
 
       <!-- Navigation Controls -->

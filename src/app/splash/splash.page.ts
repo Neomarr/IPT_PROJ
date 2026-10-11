@@ -1,20 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { IonContent, IonProgressBar } from '@ionic/angular';
 
 @Component({
   selector: 'app-splash',
   templateUrl: './splash.page.html',
   styleUrls: ['./splash.page.scss'],
   standalone: true,
-  imports: [IonContent]
+  imports: [
+    CommonModule,
+    IonContent,
+    IonProgressBar
+  ]
 })
 export class SplashPage implements OnInit {
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
   ngOnInit() {
     setTimeout(() => {
-      this.router.navigateByUrl('/home', { replaceUrl: true });
+      this.router.navigateByUrl('/products', { replaceUrl: true });
     }, 2500);
   }
 }

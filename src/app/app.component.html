@@ -49,23 +49,20 @@
 
   <!-- Main View Area -->
   <div class="ion-page" id="main-content">
-    <ion-header class="ion-no-border">
+    <ion-header class="ion-no-border" *ngIf="!isSplashScreen">
       <ion-toolbar class="custom-navbar">
-        <!-- Hamburger Menu Button with auto-hide set to false -->
         <ion-buttons slot="start">
           <ion-menu-button [autoHide]="false" class="hamburger-btn"></ion-menu-button>
         </ion-buttons>
 
-        <!-- Brand Logo -->
         <ion-title>
           <div class="logo-container" routerLink="/products">
             <img src="assets/logo.png" alt="JDM Experience Logo" class="nav-logo" />
           </div>
         </ion-title>
 
-        <!-- Profile Popover Trigger -->
         <ion-buttons slot="end">
-          <ion-button id="profile-popover-trigger" class="profile-btn">
+          <ion-button (click)="presentProfilePopover($event)" class="profile-btn">
             <ion-icon name="person-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -76,7 +73,7 @@
   </div>
 
   <!-- Profile Dropdown Popover -->
-  <ion-popover trigger="profile-popover-trigger" dismissOnSelect="true" #profilePopover class="dark-popover">
+  <ion-popover #profilePopover dismissOnSelect="true" class="dark-popover">
     <ng-template>
       <ion-content class="popover-content">
         <ng-container *ngIf="(auth.isAuthenticated$ | async); else guestMenu">
