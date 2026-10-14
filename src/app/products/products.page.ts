@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { firstValueFrom, timeout, catchError, of } from 'rxjs';
 import {
   IonContent,
   IonInput,
@@ -91,13 +92,6 @@ export class ProductsPage implements OnInit {
   }
 
   async initUserAndTours() {
-    this.auth.user$.subscribe(async (user) => {
-      if (user && user.email) {
-        this.userEmail = user.email;
-        await this.syncUserId();
-      }
-    });
-
     await this.syncUserId();
     await this.fetchTours();
   }
@@ -106,33 +100,48 @@ export class ProductsPage implements OnInit {
     if (this.userId) return this.userId;
 
     try {
+      // 1. Fetch Auth0 user with timeout
+      const user = await firstValueFrom(
+        this.auth.user$.pipe(
+          timeout(2000),
+          catchError(() => of(null))
+        )
+      );
+
+      if (user && user.email) {
+        this.userEmail = user.email;
+      }
+
+      // 2. Fetch user_id using email
       if (this.userEmail) {
         const { data: existingUser } = await this.supabaseService.client
           .from('users')
-          .select('id')
+          .select('user_id')
           .eq('email', this.userEmail)
           .maybeSingle();
 
-        if (existingUser?.id) {
-          this.userId = existingUser.id;
+        if (existingUser?.user_id) {
+          this.userId = existingUser.user_id;
         }
       }
 
+      // 3. Fallback: Query user_id primary key
       if (!this.userId) {
         const { data: latestUsers } = await this.supabaseService.client
           .from('users')
-          .select('id, email')
-          .order('id', { ascending: false })
+          .select('user_id, email')
+          .order('user_id', { ascending: false })
           .limit(1);
 
         if (latestUsers && latestUsers.length > 0) {
-          this.userId = latestUsers[0].id;
+          this.userId = latestUsers[0].user_id;
           if (!this.userEmail) {
             this.userEmail = latestUsers[0].email;
           }
         }
       }
 
+      // 4. Fetch wishlist tour IDs
       if (this.userId) {
         const { data: wishlistData } = await this.supabaseService.client
           .from('wishlists')

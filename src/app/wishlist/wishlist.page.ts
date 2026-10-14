@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout, catchError, of } from 'rxjs';
 import { 
   IonContent, 
   IonButton, 
@@ -66,73 +66,90 @@ export class WishlistPage implements OnInit {
       this.isLoading = true;
       this.cdr.detectChanges();
 
-      const user = await firstValueFrom(this.auth.user$);
+      // 1. Fetch Auth0 user with timeout
+      const user = await firstValueFrom(
+        this.auth.user$.pipe(
+          timeout(2000),
+          catchError(() => of(null))
+        )
+      );
+
       if (user && user.email) {
         this.userEmail = user.email;
-        await this.fetchUserIdAndWishlist();
-      } else {
-        this.isLoading = false;
       }
-    } catch (err) {
-      console.error('Error loading wishlist:', err);
-      this.isLoading = false;
-    } finally {
-      this.cdr.detectChanges();
-    }
-  }
 
-  async fetchUserIdAndWishlist() {
-    try {
-      if (!this.userEmail) return;
+      // 2. Fetch user_id from Supabase 'users' table using email
+      if (this.userEmail) {
+        const { data: userData } = await this.supabaseService.client
+          .from('users')
+          .select('user_id')
+          .eq('email', this.userEmail)
+          .maybeSingle();
 
-      const { data: userData, error: userError } = await this.supabaseService.client
-        .from('users')
-        .select('id')
-        .eq('email', this.userEmail)
-        .maybeSingle();
+        if (userData?.user_id) {
+          this.userId = userData.user_id;
+        }
+      }
 
-      if (userError || !userData) {
-        console.warn('User record not found in Supabase:', userError);
-        this.isLoading = false;
+      // 3. Fallback: Query users table using user_id primary key
+      if (!this.userId) {
+        const { data: latestUsers } = await this.supabaseService.client
+          .from('users')
+          .select('user_id')
+          .order('user_id', { ascending: false })
+          .limit(1);
+
+        if (latestUsers && latestUsers.length > 0) {
+          this.userId = latestUsers[0].user_id;
+        }
+      }
+
+      if (!this.userId) {
+        console.warn('No active user ID found in Supabase.');
+        this.wishlistItems = [];
         return;
       }
 
-      this.userId = userData.id;
-
-      const { data: wishlistData, error: wishlistError } = await this.supabaseService.client
+      // 4. Fetch raw wishlist rows for user
+      const { data: wishlistData, error: wishlistErr } = await this.supabaseService.client
         .from('wishlists')
-        .select(`
-          id,
-          tour_id,
-          tours (
-            id,
-            title,
-            name,
-            price,
-            tour_price,
-            status,
-            image_url,
-            images
-          )
-        `)
+        .select('id, tour_id')
         .eq('user_id', this.userId);
 
-      if (wishlistError) throw wishlistError;
+      if (wishlistErr) throw wishlistErr;
 
-      this.wishlistItems = (wishlistData || []).map((item: any) => {
-        const tour = item.tours;
+      if (!wishlistData || wishlistData.length === 0) {
+        this.wishlistItems = [];
+        return;
+      }
+
+      const tourIds = wishlistData.map((item: any) => item.tour_id);
+
+      // 5. Fetch matching tours & tour_images
+      const { data: toursData, error: toursErr } = await this.supabaseService.client
+        .from('tours')
+        .select('*, tour_images(*)')
+        .in('id', tourIds);
+
+      if (toursErr) throw toursErr;
+
+      // 6. Map wishlist items for display
+      this.wishlistItems = wishlistData.map((wItem: any) => {
+        const tour = (toursData || []).find((t: any) => t.id === wItem.tour_id);
+        const imageObj = tour?.tour_images && tour.tour_images.length > 0 ? tour.tour_images[0] : null;
+
         return {
-          wishlist_id: item.id,
-          tour_id: item.tour_id,
-          title: tour?.title || tour?.name || 'JDM Tour',
+          wishlist_id: wItem.id,
+          tour_id: wItem.tour_id,
+          title: tour?.name || tour?.title || 'JDM Tour',
           price: tour?.price || tour?.tour_price || 0,
           status: tour?.status || 'AVAILABLE',
-          image: tour?.image_url || (tour?.images && tour?.images[0]) || 'assets/placeholder.jpg'
+          image: imageObj?.image_url || imageObj?.url || imageObj?.image || 'assets/placeholder.jpg'
         };
       });
 
     } catch (err) {
-      console.error('Error fetching wishlist:', err);
+      console.error('Error in loadWishlistData:', err);
     } finally {
       this.isLoading = false;
       this.cdr.detectChanges();
@@ -158,7 +175,7 @@ export class WishlistPage implements OnInit {
   }
 
   goToTourDetail(tourId: number) {
-    this.router.navigate(['/booking'], { queryParams: { tourId } });
+    this.router.navigate(['/products/product-detail', tourId]);
   }
 
   exploreTours() {
