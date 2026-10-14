@@ -5,74 +5,81 @@
       <span>Back to Website</span>
     </div>
 
-    <!-- GUEST VIEW -->
-    <div *ngIf="(auth.isAuthenticated$ | async) === false" class="auth-card-wrapper">
-      <ion-card class="auth-card">
-        <ion-card-content>
-          <h1 class="auth-title">Welcome Back</h1>
-          <p class="auth-description">
-            Sign in to book tours, view your reservations, and manage your profile.
-          </p>
-
-          <ion-button color="danger" expand="block" class="sign-in-btn" (click)="login()">
-            Sign in
-          </ion-button>
-
-          <div class="create-account-text">
-            <span>Don't have an account? </span>
-            <a (click)="login()" class="create-link">Create one</a>
-          </div>
-        </ion-card-content>
-      </ion-card>
+    <!-- AUTH LOADING STATE -->
+    <div *ngIf="auth.isLoading$ | async" class="loading-box ion-text-center">
+      <ion-spinner name="crescent" color="danger"></ion-spinner>
     </div>
 
-    <!-- LOGGED IN PROFILE VIEW -->
-    <div *ngIf="auth.user$ | async as user" class="profile-card-wrapper">
-      <ion-card class="profile-card">
-        <ion-card-content>
-          <h1 class="profile-title">My Profile</h1>
+    <ng-container *ngIf="(auth.isLoading$ | async) === false">
+      <!-- GUEST VIEW -->
+      <div *ngIf="(auth.isAuthenticated$ | async) === false" class="auth-card-wrapper">
+        <ion-card class="auth-card">
+          <ion-card-content>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-description">
+              Sign in to book tours, view your reservations, and manage your profile.
+            </p>
 
-          <div *ngIf="isLoadingProfile" class="loading-box ion-text-center">
-            <ion-spinner name="crescent" color="danger"></ion-spinner>
-          </div>
-
-          <div *ngIf="!isLoadingProfile">
-            <div class="form-group">
-              <label>* Full Name</label>
-              <ion-input
-                type="text"
-                class="custom-input"
-                [(ngModel)]="fullName"
-              ></ion-input>
-            </div>
-
-            <div class="form-group">
-              <label>Email</label>
-              <ion-input
-                type="email"
-                class="custom-input disabled-input"
-                [value]="user.email"
-                [readonly]="true"
-              ></ion-input>
-              <span class="sub-text">Managed by your sign-in provider.</span>
-            </div>
-
-            <div class="form-group">
-              <label>Phone</label>
-              <ion-input
-                type="tel"
-                class="custom-input"
-                placeholder="09457949928"
-                [(ngModel)]="phoneNumber"
-              ></ion-input>
-            </div>
-
-            <ion-button color="danger" expand="block" class="save-btn" (click)="saveProfile()">
-              Save Changes
+            <ion-button color="danger" expand="block" class="sign-in-btn" (click)="login()">
+              Sign in
             </ion-button>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    </div>
+
+            <div class="create-account-text">
+              <span>Don't have an account? </span>
+              <a (click)="login()" class="create-link">Create one</a>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- LOGGED IN PROFILE VIEW -->
+      <div *ngIf="auth.user$ | async as user" class="profile-card-wrapper">
+        <ion-card class="profile-card">
+          <ion-card-content>
+            <h1 class="profile-title">My Profile</h1>
+
+            <div *ngIf="isLoadingProfile" class="loading-box ion-text-center">
+              <ion-spinner name="crescent" color="danger"></ion-spinner>
+            </div>
+
+            <div *ngIf="!isLoadingProfile">
+              <div class="form-group">
+                <label>Full Name</label>
+                <ion-input
+                  type="text"
+                  class="custom-input"
+                  [(ngModel)]="fullName"
+                ></ion-input>
+              </div>
+
+              <div class="form-group">
+                <label>Email</label>
+                <ion-input
+                  type="email"
+                  class="custom-input disabled-input"
+                  [value]="user.email"
+                  [readonly]="true"
+                ></ion-input>
+                <span class="sub-text">Managed by your sign-in provider.</span>
+              </div>
+
+              <div class="form-group">
+                <label>Phone</label>
+                <ion-input
+                  type="tel"
+                  class="custom-input"
+                  placeholder="09457949928"
+                  [(ngModel)]="phoneNumber"
+                ></ion-input>
+              </div>
+
+              <ion-button color="danger" expand="block" class="save-btn" (click)="saveProfile()">
+                Save Changes
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ng-container>
   </div>
 </ion-content>

@@ -1,0 +1,112 @@
+<ion-content [fullscreen]="true" class="wishlist-content">
+
+  <div class="wishlist-container">
+
+    <h1 class="page-title">My Wishlist</h1>
+
+
+
+    <!-- Loading State -->
+
+    <div class="loading-state" *ngIf="isLoading">
+
+      <ion-spinner name="crescent" color="danger"></ion-spinner>
+
+    </div>
+
+
+
+    <!-- Empty Wishlist View (Matches Image 2) -->
+
+    <div class="empty-wishlist" *ngIf="!isLoading && wishlistItems.length === 0">
+
+      <div class="empty-illustration">
+
+        <div class="drawer-icon">
+
+          <div class="drawer-box">
+
+            <div class="drawer-line"></div>
+
+            <div class="drawer-handle"></div>
+
+          </div>
+
+          <div class="speech-bubble">...</div>
+
+        </div>
+
+      </div>
+
+      <p class="empty-text">Save tours you are interested in and come back to them later.</p>
+
+      <ion-button color="danger" class="explore-btn" (click)="exploreTours()">
+
+        Explore Tours
+
+      </ion-button>
+
+    </div>
+
+
+
+    <!-- Active Wishlist Cards View (Matches Image 1) -->
+
+    <div class="wishlist-grid" *ngIf="!isLoading && wishlistItems.length > 0">
+
+      <div class="tour-card" *ngFor="let item of wishlistItems">
+
+        <div class="card-image-wrapper">
+
+          <img [src]="item.image" [alt]="item.title" class="card-img" />
+
+         
+
+          <!-- Heart Button (Tapping removes item) -->
+
+          <button class="heart-btn active" (click)="removeFromWishlist(item, $event)">
+
+            <ion-icon name="heart"></ion-icon>
+
+          </button>
+
+
+
+          <span class="status-badge" [class.available]="item.status?.toLowerCase() === 'available'">
+
+            {{ item.status || 'Available' }}
+
+          </span>
+
+        </div>
+
+
+
+        <div class="card-details">
+
+          <h3 class="tour-title">{{ item.title }}</h3>
+
+          <p class="price-label">Tour Price</p>
+
+          <div class="card-footer">
+
+            <span class="tour-price">¥{{ item.price | number:'1.2-2' }}</span>
+
+            <button class="action-btn" (click)="goToTourDetail(item.tour_id)">
+
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>
+

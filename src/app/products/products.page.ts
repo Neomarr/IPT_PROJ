@@ -3,20 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
-  IonButtons,
-  IonMenuButton,
   IonInput,
   IonSelect,
   IonSelectOption,
   IonButton,
   IonCard,
   IonBadge,
-  IonIcon,
-  IonSpinner
+  IonIcon
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { 
@@ -28,6 +22,7 @@ import {
   arrowForwardOutline 
 } from 'ionicons/icons';
 import { SupabaseService } from '../services/supabase';
+import { AuthService } from '@auth0/auth0-angular';
 
 export interface Tour {
   id: number;
@@ -47,24 +42,19 @@ export interface Tour {
     CommonModule,
     FormsModule,
     RouterLink,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
-    IonButtons,
-    IonMenuButton,
     IonInput,
     IonSelect,
     IonSelectOption,
     IonButton,
     IonCard,
     IonBadge,
-    IonIcon,
-    IonSpinner
+    IonIcon
   ]
 })
 export class ProductsPage implements OnInit {
-  private supabaseService = inject(SupabaseService);
+  private supabaseService: any = inject(SupabaseService);
+  public auth = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
   searchTerm: string = '';
@@ -76,6 +66,10 @@ export class ProductsPage implements OnInit {
   tours: Tour[] = [];
   filteredTours: Tour[] = [];
   isLoading: boolean = true;
+
+  userId: number | null = null;
+  userEmail: string | null = null;
+  wishlistTourIds: Set<number> = new Set();
 
   constructor() {
     addIcons({
@@ -89,21 +83,77 @@ export class ProductsPage implements OnInit {
   }
 
   async ngOnInit() {
+    await this.initUserAndTours();
+  }
+
+  async ionViewWillEnter() {
+    await this.initUserAndTours();
+  }
+
+  async initUserAndTours() {
+    this.auth.user$.subscribe(async (user) => {
+      if (user && user.email) {
+        this.userEmail = user.email;
+        await this.syncUserId();
+      }
+    });
+
+    await this.syncUserId();
     await this.fetchTours();
   }
 
-  // Also re-fetch whenever user navigates to this tab
-  async ionViewWillEnter() {
-    if (this.tours.length === 0) {
-      await this.fetchTours();
+  async syncUserId(): Promise<number | null> {
+    if (this.userId) return this.userId;
+
+    try {
+      if (this.userEmail) {
+        const { data: existingUser } = await this.supabaseService.client
+          .from('users')
+          .select('id')
+          .eq('email', this.userEmail)
+          .maybeSingle();
+
+        if (existingUser?.id) {
+          this.userId = existingUser.id;
+        }
+      }
+
+      if (!this.userId) {
+        const { data: latestUsers } = await this.supabaseService.client
+          .from('users')
+          .select('id, email')
+          .order('id', { ascending: false })
+          .limit(1);
+
+        if (latestUsers && latestUsers.length > 0) {
+          this.userId = latestUsers[0].id;
+          if (!this.userEmail) {
+            this.userEmail = latestUsers[0].email;
+          }
+        }
+      }
+
+      if (this.userId) {
+        const { data: wishlistData } = await this.supabaseService.client
+          .from('wishlists')
+          .select('tour_id')
+          .eq('user_id', this.userId);
+
+        if (wishlistData) {
+          this.wishlistTourIds = new Set(wishlistData.map((item: any) => item.tour_id));
+        }
+      }
+    } catch (err) {
+      console.error('Error syncing user ID:', err);
     }
+
+    return this.userId;
   }
 
   async fetchTours() {
     try {
       this.isLoading = true;
 
-      // Join tour_images table so image URLs load properly
       const { data, error } = await this.supabaseService.client
         .from('tours')
         .select('*, tour_images(*)');
@@ -118,21 +168,60 @@ export class ProductsPage implements OnInit {
         image: item.tour_images && item.tour_images.length > 0 
           ? (item.tour_images[0].image_url || item.tour_images[0].url || item.tour_images[0].image)
           : 'assets/placeholder.jpg',
-        isFavorite: false
+        isFavorite: this.wishlistTourIds.has(item.id)
       }));
 
       this.applyFilters();
     } catch (err) {
-      console.error('Error fetching tours from Supabase:', err);
+      console.error('Error fetching tours:', err);
     } finally {
       this.isLoading = false;
-      // Force change detection so the UI updates immediately after fetch
       this.cdr.detectChanges();
     }
   }
 
-  toggleFavorite(tour: Tour) {
-    tour.isFavorite = !tour.isFavorite;
+  async toggleFavorite(tour: Tour) {
+    let targetUserId = this.userId;
+    if (!targetUserId) {
+      targetUserId = await this.syncUserId();
+    }
+
+    if (!targetUserId) {
+      alert('Please sign in to save tours to your wishlist.');
+      return;
+    }
+
+    const previousState = tour.isFavorite;
+    tour.isFavorite = !previousState;
+    this.cdr.detectChanges();
+
+    try {
+      if (previousState) {
+        const { error } = await this.supabaseService.client
+          .from('wishlists')
+          .delete()
+          .eq('user_id', targetUserId)
+          .eq('tour_id', tour.id);
+
+        if (error) throw error;
+        this.wishlistTourIds.delete(tour.id);
+      } else {
+        const { error } = await this.supabaseService.client
+          .from('wishlists')
+          .insert([{
+            user_id: targetUserId,
+            tour_id: tour.id,
+            created_at: new Date().toISOString()
+          }]);
+
+        if (error) throw error;
+        this.wishlistTourIds.add(tour.id);
+      }
+    } catch (err) {
+      console.error('Error updating wishlist:', err);
+      tour.isFavorite = previousState;
+      this.cdr.detectChanges();
+    }
   }
 
   applyFilters() {
