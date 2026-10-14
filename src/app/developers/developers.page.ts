@@ -18,10 +18,10 @@ import {
 })
 export class DevelopersPage {
   developers = [
-    { name: 'Austin James R. Atienza', program: 'BSIT', avatar: 'assets/avatars/dev1.png' },
-    { name: 'Neomar Julius S. Cañete', program: 'BSIT', avatar: 'assets/avatars/dev2.png' },
-    { name: 'Achilles Julian L. Lucas', program: 'BSIT', avatar: 'assets/avatars/dev3.png' },
-    { name: 'Andrew Vann R. Mendoza', program: 'BSIT', avatar: 'assets/avatars/dev4.png' },
-    { name: 'Ken Nicolai P. Requez', program: 'BSIT', avatar: 'assets/avatars/dev5.png' }
+    { name: 'Austin James R. Atienza', program: 'BSIT', avatar: 'assets/aust.jpg' },
+    { name: 'Neomar Julius S. Cañete', program: 'BSIT', avatar: 'assets/grad_pic.jpg' },
+    { name: 'Achilles Julian L. Lucas', program: 'BSIT', avatar: 'assets/chill.png' },
+    { name: 'Andrew Vann R. Mendoza', program: 'BSIT', avatar: 'assets/drew.jpg' },
+    { name: 'Ken Nicolai P. Requez', program: 'BSIT', avatar: 'assets/ken.png' }
   ];
 }
