@@ -100,7 +100,6 @@ export class ProductsPage implements OnInit {
     if (this.userId) return this.userId;
 
     try {
-      // 1. Fetch Auth0 user with timeout
       const user = await firstValueFrom(
         this.auth.user$.pipe(
           timeout(2000),
@@ -112,7 +111,6 @@ export class ProductsPage implements OnInit {
         this.userEmail = user.email;
       }
 
-      // 2. Fetch user_id using email
       if (this.userEmail) {
         const { data: existingUser } = await this.supabaseService.client
           .from('users')
@@ -125,7 +123,6 @@ export class ProductsPage implements OnInit {
         }
       }
 
-      // 3. Fallback: Query user_id primary key
       if (!this.userId) {
         const { data: latestUsers } = await this.supabaseService.client
           .from('users')
@@ -141,7 +138,6 @@ export class ProductsPage implements OnInit {
         }
       }
 
-      // 4. Fetch wishlist tour IDs
       if (this.userId) {
         const { data: wishlistData } = await this.supabaseService.client
           .from('wishlists')
@@ -163,22 +159,30 @@ export class ProductsPage implements OnInit {
     try {
       this.isLoading = true;
 
+      // Filter out deleted tours, excluding soft-deleted rows
       const { data, error } = await this.supabaseService.client
         .from('tours')
-        .select('*, tour_images(*)');
+        .select('*, tour_images(*)')
+        .eq('is_deleted', false);
 
       if (error) throw error;
 
-      this.tours = (data || []).map((item: any) => ({
-        id: item.id,
-        name: item.name || item.title || '',
-        price: item.price || 0,
-        status: (item.status || 'AVAILABLE').toUpperCase(),
-        image: item.tour_images && item.tour_images.length > 0 
-          ? (item.tour_images[0].image_url || item.tour_images[0].url || item.tour_images[0].image)
-          : 'assets/placeholder.jpg',
-        isFavorite: this.wishlistTourIds.has(item.id)
-      }));
+      this.tours = (data || []).map((item: any) => {
+        const statusVal = item.status ? String(item.status).trim() : 'Available';
+        // Normalize status string presentation (capitalize first letter)
+        const formattedStatus = statusVal.charAt(0).toUpperCase() + statusVal.slice(1).toLowerCase();
+
+        return {
+          id: item.id,
+          name: item.name || item.title || '',
+          price: item.price || 0,
+          status: formattedStatus,
+          image: item.tour_images && item.tour_images.length > 0 
+            ? (item.tour_images[0].image_url || item.tour_images[0].url || item.tour_images[0].image)
+            : 'assets/placeholder.jpg',
+          isFavorite: this.wishlistTourIds.has(item.id)
+        };
+      });
 
       this.applyFilters();
     } catch (err) {
@@ -240,7 +244,7 @@ export class ProductsPage implements OnInit {
       const matchesMax = this.maxPrice === undefined || this.maxPrice === null || tour.price <= this.maxPrice;
       
       const matchesStatus = this.availability === 'all' || 
-        tour.status.toUpperCase() === this.availability.toUpperCase();
+        tour.status.toLowerCase() === this.availability.toLowerCase();
 
       return matchesSearch && matchesMin && matchesMax && matchesStatus;
     });
