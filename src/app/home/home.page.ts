@@ -1,37 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterLink, Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
   IonButtons,
-  IonMenuButton,
   IonButton,
+  IonIcon,
   IonBadge,
-  IonIcon
+  IonSpinner
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import {
-  chevronBackOutline,
-  chevronForwardOutline,
-  calendarOutline,
-  carOutline,
-  timeOutline,
-  logoYen,
-  locationOutline,
-  compassOutline
+import { 
+  chevronBackOutline, 
+  chevronForwardOutline, 
+  calendarOutline, 
+  carOutline, 
+  timeOutline, 
+  logoYen, 
+  locationOutline, 
+  compassOutline 
 } from 'ionicons/icons';
-
-export interface Tour {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  status: 'Available' | 'Unavailable' | 'Under Maintenance';
-  image: string;
-}
+import { SupabaseService } from '../services/supabase';
 
 @Component({
   selector: 'app-home',
@@ -40,50 +33,41 @@ export interface Tour {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
     IonButtons,
-    IonMenuButton,
     IonButton,
+    IonIcon,
     IonBadge,
-    IonIcon
+    IonSpinner
   ]
 })
-export class HomePage {
-  tours: Tour[] = [
-    {
-      id: 1,
-      name: 'Ford Mustang GTExperience',
-      price: 60000,
-      description: "Ford Mustang GTExperience Tokyo's legendary car culture with a roar that...",
-      status: 'Available',
-      image: 'assets/tours/ford1.jpg'
-    },
-    {
-      id: 2,
-      name: 'Nissan Skyline (R34) Sedan',
-      price: 15500,
-      description: 'Experience iconic JDM performance behind the wheel of the legendary R34...',
-      status: 'Available',
-      image: 'assets/tours/r34.jpg'
-    },
-    {
-      id: 3,
-      name: 'Nissan GT-R (R35)',
-      price: 5600,
-      description: 'Unleash Godzilla on Tokyo highways with twin-turbo AWD power...',
-      status: 'Available',
-      image: 'assets/tours/r35.jpg'
-    }
-  ];
+export class HomePage implements OnInit {
+  private supabaseService: any = inject(SupabaseService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
+  rawTours: any[] = [];
+  tours: any[] = [];
   currentIndex: number = 0;
+  isLoading: boolean = true;
 
-  get currentTour(): Tour {
-    return this.tours[this.currentIndex];
+  get currentTour(): any {
+    if (this.tours.length > 0) {
+      return this.tours[this.currentIndex];
+    }
+    return {
+      id: null,
+      name: 'Loading...',
+      price: 0,
+      description: '',
+      status: 'Available',
+      image: 'assets/placeholder.jpg'
+    };
   }
 
   constructor() {
@@ -99,11 +83,68 @@ export class HomePage {
     });
   }
 
+  async ngOnInit() {
+    await this.loadFeaturedTours();
+  }
+
+  async loadFeaturedTours() {
+    try {
+      this.isLoading = true;
+
+      // Fetch ONLY the 3 main active tours (IDs 11, 12, 13)
+      const { data, error } = await this.supabaseService.client
+        .from('tours')
+        .select('*, tour_images(*)')
+        .in('id', [11, 12, 13])
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        this.rawTours = data;
+        this.tours = data.map((t: any) => {
+          let img = 'assets/placeholder.jpg';
+          if (t.tour_images && t.tour_images.length > 0) {
+            img = t.tour_images[0].image_url || t.tour_images[0].url;
+          }
+          return {
+            id: t.id,
+            name: t.name || t.title,
+            price: t.price || 0,
+            description: t.description || '',
+            status: t.status ? (t.status.charAt(0).toUpperCase() + t.status.slice(1).toLowerCase()) : 'Available',
+            image: img
+          };
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching featured tours:', err);
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
+  }
+
   nextTour() {
-    this.currentIndex = (this.currentIndex + 1) % this.tours.length;
+    if (this.tours.length > 0) {
+      this.currentIndex = (this.currentIndex + 1) % this.tours.length;
+      this.cdr.detectChanges();
+    }
   }
 
   prevTour() {
-    this.currentIndex = (this.currentIndex - 1 + this.tours.length) % this.tours.length;
+    if (this.tours.length > 0) {
+      this.currentIndex = (this.currentIndex - 1 + this.tours.length) % this.tours.length;
+      this.cdr.detectChanges();
+    }
+  }
+
+  goToTourDetails() {
+    const tour = this.currentTour;
+    if (tour && tour.id) {
+      this.router.navigate(['/products/product-detail', tour.id]);
+    } else {
+      console.warn('Cannot navigate: invalid tour ID', tour);
+    }
   }
 }

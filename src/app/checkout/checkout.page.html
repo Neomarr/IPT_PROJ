@@ -1,0 +1,152 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/products" color="light"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Review & Confirm</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="checkout-content">
+
+  <div class="toast-banner" *ngIf="submissionSuccess">
+    <ion-icon name="checkmark-circle" color="success"></ion-icon>
+    <div class="toast-text">
+      <h4>Reservation {{ bookingReference }} submitted.</h4>
+      <p>Our team will verify your payment and update your reservation status.</p>
+    </div>
+  </div>
+
+  <div class="checkout-wrapper">
+    <h1 class="page-title">Review & Confirm Reservation</h1>
+
+    <div class="checkout-stack">
+      
+      <!-- 1. Reservation Summary -->
+      <div class="checkout-card" *ngIf="tour">
+        <div class="card-header">
+          <h3>Reservation Summary</h3>
+        </div>
+        <div class="card-body">
+          <div class="tour-img-box">
+            <img [src]="mainImage" [alt]="tour?.name" />
+          </div>
+          <h2 class="tour-title">{{ tour?.name || tour?.title }}</h2>
+          <p class="tour-desc">{{ tour?.description }}</p>
+
+          <div class="summary-meta-row">
+            <span class="meta-label">Reservation Date</span>
+            <span class="meta-val">{{ bookingDate | date:'longDate' }}</span>
+          </div>
+
+          <div class="summary-meta-row">
+            <span class="meta-label">Number of Seats</span>
+            <span class="meta-val">{{ participants }} (tour capacity: {{ tour?.max_capacity || 2 }})</span>
+          </div>
+
+          <div class="summary-meta-row price-row">
+            <span class="meta-label">Total</span>
+            <div class="price-val-box">
+              <span class="strike-price">¥{{ originalPrice | number:'1.2-2' }}</span>
+              <span class="final-price">¥{{ totalPrice | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Customer Information -->
+      <div class="checkout-card">
+        <div class="card-header">
+          <h3>Customer Information</h3>
+        </div>
+        <div class="card-body">
+          <div class="info-group">
+            <label>Full Name</label>
+            <p>{{ customerName }}</p>
+          </div>
+          <div class="info-group">
+            <label>Email</label>
+            <p>{{ customerEmail }}</p>
+          </div>
+          <div class="info-group">
+            <label>Phone Number</label>
+            <p>{{ customerPhone }}</p>
+          </div>
+
+          <ion-button fill="outline" color="light" class="edit-btn" (click)="editReservationDetails()">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Edit Reservation Details
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- 3. Payment Method -->
+      <div class="checkout-card">
+        <div class="card-header">
+          <h3>Payment Method</h3>
+        </div>
+        <div class="card-body">
+          <h4 class="pm-name">{{ paymentMethod?.name || 'PayPal' }}</h4>
+          <div class="qr-box" *ngIf="paymentMethod?.image_url">
+            <img [src]="paymentMethod.image_url" alt="Payment QR or Info" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Payment Proof -->
+      <div class="checkout-card">
+        <div class="card-header">
+          <h3>Payment Proof</h3>
+        </div>
+        <div class="card-body">
+          <p class="proof-note">Upload your payment receipt/screenshot after completing the payment above.</p>
+
+          <!-- Hidden File Input placed outside ngIf so #fileInput is always accessible -->
+          <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
+
+          <div class="preview-wrapper" *ngIf="filePreviewUrl">
+            <img [src]="filePreviewUrl" alt="Payment Proof Receipt" class="proof-preview-img" />
+            <ion-button fill="outline" color="light" size="small" class="reupload-btn" (click)="fileInput.click()">
+              <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+              Remove & Re-upload
+            </ion-button>
+          </div>
+
+          <div *ngIf="!filePreviewUrl">
+            <ion-button fill="outline" color="light" class="upload-btn" (click)="fileInput.click()">
+              <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+              Upload Payment Proof
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Confirmation & Submission -->
+      <div class="checkout-card">
+        <div class="card-body">
+          <div class="checkbox-row">
+            <ion-checkbox [(ngModel)]="isConfirmedCheckbox" color="danger"></ion-checkbox>
+            <span class="check-text">
+              I have reviewed my reservation details and payment information and confirm that they are correct.
+            </span>
+          </div>
+
+          <p class="review-notice">
+            Your reservation will be reviewed by our team after your payment proof is submitted. It will not be confirmed automatically.
+          </p>
+
+          <ion-button 
+            color="danger" 
+            expand="block" 
+            class="confirm-btn" 
+            [disabled]="!isConfirmedCheckbox || !selectedFile || isSubmitting"
+            (click)="confirmReservation()">
+            <ion-spinner name="crescent" *ngIf="isSubmitting"></ion-spinner>
+            <span *ngIf="!isSubmitting">Confirm Reservation</span>
+          </ion-button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

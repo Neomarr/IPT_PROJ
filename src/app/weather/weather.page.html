@@ -1,0 +1,32 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/products" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Weather Forecast</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="weather-content">
+  <div class="weather-container">
+    <h1 class="page-title">Weather Forecast</h1>
+    <p class="subtitle">
+      Forecast for the Japan JDM Experience location, provided by Open-Meteo and typically covering the upcoming days.
+    </p>
+
+    <!-- Loading State -->
+    <div class="loading-box" *ngIf="isLoading">
+      <ion-spinner name="crescent" color="danger"></ion-spinner>
+    </div>
+
+    <!-- 2-Column Weather Cards Grid -->
+    <div class="weather-grid" *ngIf="!isLoading">
+      <div class="weather-card" *ngFor="let day of forecast">
+        <h3 class="card-date">{{ day.date | date:'MMMM d, yyyy' }}</h3>
+        <div class="card-icon">{{ day.icon }}</div>
+        <p class="card-desc">{{ day.description }}</p>
+        <p class="card-temp">{{ day.maxTemp }}° / {{ day.minTemp }}°C</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

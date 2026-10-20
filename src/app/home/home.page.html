@@ -9,46 +9,47 @@
   </section>
 
   <!-- 2. Featured Tours Carousel Section -->
-  <section class="featured-section ion-padding">
-    <h2>Featured Tours</h2>
-    <p class="subtitle">All vehicles are managed through the existing tour fleet system.</p>
+  <!-- 2. Featured Tours Carousel Section -->
+<section class="featured-section ion-padding">
+  <h2>Featured Tours</h2>
+  <p class="subtitle">All vehicles are managed through the existing tour fleet system.</p>
 
-    <div class="featured-card">
-      <div class="card-image-wrapper">
-        <img [src]="currentTour.image" [alt]="currentTour.name" />
-        <ion-badge
-          class="status-badge"
-          [class.available]="currentTour.status === 'Available'"
-          [class.unavailable]="currentTour.status === 'Unavailable'"
-          [class.maintenance]="currentTour.status === 'Under Maintenance'">
-          {{ currentTour.status }}
-        </ion-badge>
-      </div>
+  <div class="featured-card" *ngIf="!isLoading && tours.length > 0">
+    <div class="card-bg-image" [style.background-image]="'url(' + currentTour.image + ')'">
+      <div class="card-overlay">
+        
+        <!-- Status Badge -->
+        <div class="badge-row">
+          <span class="status-badge" [ngClass]="currentTour.status.toLowerCase()">
+            {{ currentTour.status }}
+          </span>
+        </div>
 
-      <div class="card-details">
-        <h2>{{ currentTour.name }}</h2>
-        <p class="price">¥{{ currentTour.price | number:'1.2-2' }}</p>
-        <p class="description">{{ currentTour.description }}</p>
+        <!-- Tour Info Overlay -->
+        <div class="tour-info-overlay">
+          <h2 class="tour-name">{{ currentTour.name }}</h2>
+          <div class="tour-price">¥{{ currentTour.price | number:'1.2-2' }}</div>
+          <p class="tour-desc">{{ currentTour.description }}</p>
 
-        <ion-button 
-          color="danger" 
-          [routerLink]="['/products/product-detail', currentTour.id]" 
-          class="view-btn">
-          VIEW DETAILS
-        </ion-button>
-      </div>
+          <button class="view-details-btn" (click)="goToTourDetails()">
+            View Details
+          </button>
+        </div>
 
-      <!-- Navigation Controls -->
-      <div class="carousel-controls">
-        <button class="nav-btn" (click)="prevTour()" aria-label="Previous Tour">
-          <ion-icon name="chevron-back-outline"></ion-icon>
-        </button>
-        <button class="nav-btn" (click)="nextTour()" aria-label="Next Tour">
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </button>
+        <!-- Navigation Controls -->
+        <div class="carousel-nav">
+          <button class="nav-arrow" (click)="prevTour()" aria-label="Previous Tour">&lt;</button>
+          <button class="nav-arrow" (click)="nextTour()" aria-label="Next Tour">&gt;</button>
+        </div>
+
       </div>
     </div>
-  </section>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-box text-center">
+    <ion-spinner name="crescent" color="danger"></ion-spinner>
+  </div>
+</section>
 
   <!-- 3. Features Grid & Plan Your Trip -->
   <section class="features-section ion-padding">
@@ -97,7 +98,7 @@
         <div class="card-icon red-icon"><ion-icon name="location-outline"></ion-icon></div>
         <h3>Tokyo Weather</h3>
         <p>Check the forecast for your tour date before you head out.</p>
-        <a routerLink="/weather" class="forecast-link">View forecast &rarr;</a>
+        <a routerLink="/weather" class="view-forecast-btn">View forecast &rarr;</a>
       </div>
     </div>
   </section>

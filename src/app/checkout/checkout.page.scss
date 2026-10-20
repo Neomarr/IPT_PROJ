@@ -1,0 +1,253 @@
+.checkout-content {
+  --background: #0b0f19;
+  color: #ffffff;
+}
+
+.toast-banner {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 420px;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 999;
+
+  ion-icon {
+    font-size: 1.8rem;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 2px 0 0 0;
+    font-size: 0.8rem;
+    color: #475569;
+  }
+}
+
+.checkout-wrapper {
+  padding: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+  display: block !important;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin: 10px 0 20px 0;
+  color: #ffffff;
+}
+
+.checkout-stack {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  width: 100% !important;
+}
+
+.checkout-card {
+  background: #131926;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  width: 100% !important;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+
+  .card-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid #1e293b;
+
+    h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+  }
+
+  .card-body {
+    padding: 16px;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+}
+
+.tour-img-box {
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.tour-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+}
+
+.tour-desc {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.summary-meta-row {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #1e293b;
+
+  .meta-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+  }
+
+  .meta-val {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  &.price-row {
+    border-bottom: none;
+    padding-top: 12px;
+
+    .strike-price {
+      text-decoration: line-through;
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-right: 8px;
+    }
+
+    .final-price {
+      color: #ef4444;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+  }
+}
+
+.info-group {
+  margin-bottom: 12px;
+
+  label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  p {
+    margin: 2px 0 0 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+}
+
+.edit-btn {
+  margin-top: 12px;
+  --border-color: #334155;
+  --color: #ffffff;
+  font-size: 0.82rem;
+  width: 100%;
+}
+
+.pm-name {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.qr-box {
+  width: 100%;
+  max-width: 280px;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    display: block;
+  }
+}
+
+.proof-note {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin-bottom: 14px;
+}
+
+.preview-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start;
+  gap: 10px;
+
+  .proof-preview-img {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #334155;
+  }
+}
+
+.upload-btn, .reupload-btn {
+  --border-color: #334155;
+  --color: #ffffff;
+  font-size: 0.82rem;
+}
+
+.checkbox-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+
+  .check-text {
+    font-size: 0.82rem;
+    color: #e2e8f0;
+    line-height: 1.4;
+  }
+}
+
+.review-notice {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.confirm-btn {
+  height: 44px;
+  font-weight: 700;
+  width: 100%;
+}

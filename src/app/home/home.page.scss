@@ -68,109 +68,140 @@ ion-toolbar {
   }
 }
 
-/* Featured Card Container */
+/* Featured Card Image-Overlay Container */
 .featured-card {
-  background: #161c28;
+  position: relative;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid #212a3a;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 
-  .card-image-wrapper {
-    position: relative;
+  .card-bg-image {
     width: 100%;
-    height: 200px;
+    height: 380px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  .card-overlay {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      180deg, 
+      rgba(15, 17, 23, 0.25) 0%, 
+      rgba(15, 17, 23, 0.85) 60%, 
+      rgba(15, 17, 23, 0.98) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .badge-row {
+    display: flex;
+    justify-content: flex-end;
 
     .status-badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      padding: 6px 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
       border-radius: 6px;
+      background: rgba(16, 185, 129, 0.2);
+      color: #48bb78;
+      border: 1px solid #153e20;
 
-      &.available {
-        background: #153e20;
-        color: #48bb78;
-      }
       &.unavailable {
-        background: #4a1515;
+        background: rgba(239, 68, 68, 0.2);
         color: #f56565;
+        border-color: #4a1515;
       }
+
       &.maintenance {
-        background: #4a3815;
+        background: rgba(236, 201, 75, 0.2);
         color: #ecc94b;
+        border-color: #4a3815;
       }
     }
   }
 
-  .card-details {
-    padding: 1.25rem;
+  .tour-info-overlay {
+    text-align: right;
+    margin-top: auto;
+    padding-bottom: 10px;
 
-    h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin: 0 0 0.5rem 0;
-    }
-
-    .price {
-      font-size: 1.2rem;
+    .tour-name {
+      font-size: 1.4rem;
       font-weight: 800;
       color: #ffffff;
-      margin: 0 0 0.75rem 0;
+      margin: 0 0 4px 0;
     }
 
-    .description {
-      font-size: 0.85rem;
+    .tour-price {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .tour-desc {
+      font-size: 0.78rem;
       color: #94a3b8;
-      line-height: 1.4;
-      margin-bottom: 1.25rem;
+      margin: 0 0 14px 0;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-width: 320px;
+      margin-left: auto;
     }
 
-    .view-btn {
-      --background: #c53030;
-      --border-radius: 6px;
+    .view-details-btn {
+      background: #c53030;
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.82rem;
       font-weight: 700;
-      font-size: 0.85rem;
-      margin: 0;
-      height: 40px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #9b2c2c;
+      }
+
+      &:active {
+        opacity: 0.85;
+      }
     }
   }
 
-  /* Carousel Navigation Buttons */
-  .carousel-controls {
-    background: #0f141d;
-    padding: 0.75rem;
+  .carousel-nav {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    border-top: 1px solid #212a3a;
+    gap: 12px;
 
-    .nav-btn {
-      background: #c53030;
-      border: none;
-      width: 42px;
+    .nav-arrow {
+      background: rgba(22, 28, 40, 0.85);
+      border: 1px solid #212a3a;
+      color: #ffffff;
+      width: 34px;
       height: 34px;
-      border-radius: 6px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
 
-      ion-icon {
-        color: #ffffff;
-        font-size: 1.2rem;
-      }
-
-      &:active {
-        opacity: 0.8;
+      &:hover, &:active {
+        background: #c53030;
+        border-color: #c53030;
       }
     }
   }

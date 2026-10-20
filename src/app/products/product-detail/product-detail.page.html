@@ -1,9 +1,9 @@
-<ion-header [translucent]="true" class="ion-no-border">
-  <ion-toolbar>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="dark">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" color="light"></ion-back-button>
+      <ion-back-button defaultHref="/products" color="light"></ion-back-button>
     </ion-buttons>
-    <ion-title>Tour Details</ion-title>
+    <ion-title>Tour Detail</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="toggleFavorite()">
         <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'" [color]="isFavorite ? 'danger' : 'light'"></ion-icon>
@@ -12,45 +12,230 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div class="image-header">
-    <img [src]="tour.image" [alt]="tour.name" />
-    <ion-badge class="status-badge" [class.available]="tour.status === 'Available'">
-      {{ tour.status }}
-    </ion-badge>
+<ion-content [fullscreen]="true" class="detail-content">
+  <div *ngIf="isLoading" class="loading-spinner">
+    <ion-spinner name="crescent" color="danger"></ion-spinner>
   </div>
 
-  <div class="details-container ion-padding">
-    <div class="title-row">
-      <h1>{{ tour.name }}</h1>
-      <div class="price">¥{{ tour.price | number:'1.2-2' }}</div>
-    </div>
-
-    <!-- Specifications Grid -->
-    <div class="specs-grid">
-      <div class="spec-card">
-        <span class="label">Engine</span>
-        <span class="value">{{ tour.specs.engine }}</span>
+  <div *ngIf="!isLoading" class="detail-container">
+    
+    <!-- Gallery Main View & Thumbnails -->
+    <div class="gallery-section">
+      <div class="main-image-wrapper">
+        <img [src]="images[selectedImageIndex]" [alt]="tourName" class="main-img" />
       </div>
-      <div class="spec-card">
-        <span class="label">Gearbox</span>
-        <span class="value">{{ tour.specs.transmission }}</span>
-      </div>
-      <div class="spec-card">
-        <span class="label">Seats</span>
-        <span class="value">{{ tour.specs.seats }} Persons</span>
+      <div class="thumbnails-row" *ngIf="images.length > 1">
+        <div 
+          *ngFor="let img of images; let i = index" 
+          class="thumb-box" 
+          [class.active]="selectedImageIndex === i"
+          (click)="selectImage(i)">
+          <img [src]="img" alt="Thumbnail" />
+        </div>
       </div>
     </div>
 
-    <div class="section">
-      <h3>About This Experience</h3>
-      <p>{{ tour.description }}</p>
-    </div>
+    <!-- Tour Info -->
+    <div class="info-section">
+      <p class="guide-label">GUIDE: {{ guideName }}</p>
+      <h1 class="tour-title">{{ tourName }}</h1>
 
-    <div class="booking-bar">
-      <ion-button color="danger" expand="block" size="large" routerLink="/booking">
-        Book Tour Now
-      </ion-button>
+      <div class="price-box">
+        <p class="price-sub">Tour Price</p>
+        <p class="price-jpy">¥{{ priceJpy | number:'1.2-2' }}</p>
+      </div>
+
+      <!-- Currency Converter -->
+      <div class="currency-converter">
+        <label class="conv-label">View in your currency</label>
+        <ion-select [(ngModel)]="selectedCurrency" (ionChange)="updateCurrencyConversion()" interface="popover" class="currency-select">
+          <ion-select-option value="JPY">JPY — Japanese Yen (original)</ion-select-option>
+          <ion-select-option value="AUD">AUD — Australian Dollar</ion-select-option>
+          <ion-select-option value="BRL">BRL — Brazilian Real</ion-select-option>
+          <ion-select-option value="CAD">CAD — Canadian Dollar</ion-select-option>
+          <ion-select-option value="CHF">CHF — Swiss Franc</ion-select-option>
+          <ion-select-option value="CNY">CNY — Chinese Renminbi Yuan</ion-select-option>
+          <ion-select-option value="CZK">CZK — Czech Koruna</ion-select-option>
+          <ion-select-option value="DKK">DKK — Danish Krone</ion-select-option>
+          <ion-select-option value="EUR">EUR — Euro</ion-select-option>
+          <ion-select-option value="GBP">GBP — British Pound</ion-select-option>
+          <ion-select-option value="HKD">HKD — Hong Kong Dollar</ion-select-option>
+          <ion-select-option value="HUF">HUF — Hungarian Forint</ion-select-option>
+          <ion-select-option value="IDR">IDR — Indonesian Rupiah</ion-select-option>
+          <ion-select-option value="ILS">ILS — Israeli New Shekel</ion-select-option>
+          <ion-select-option value="INR">INR — Indian Rupee</ion-select-option>
+          <ion-select-option value="ISK">ISK — Icelandic Króna</ion-select-option>
+          <ion-select-option value="KRW">KRW — South Korean Won</ion-select-option>
+          <ion-select-option value="MXN">MXN — Mexican Peso</ion-select-option>
+          <ion-select-option value="MYR">MYR — Malaysian Ringgit</ion-select-option>
+          <ion-select-option value="NOK">NOK — Norwegian Krone</ion-select-option>
+          <ion-select-option value="NZD">NZD — New Zealand Dollar</ion-select-option>
+          <ion-select-option value="PHP">PHP — Philippine Peso</ion-select-option>
+          <ion-select-option value="PLN">PLN — Polish Złoty</ion-select-option>
+          <ion-select-option value="RON">RON — Romanian Leu</ion-select-option>
+          <ion-select-option value="SEK">SEK — Swedish Krona</ion-select-option>
+          <ion-select-option value="SGD">SGD — Singapore Dollar</ion-select-option>
+          <ion-select-option value="THB">THB — Thai Baht</ion-select-option>
+          <ion-select-option value="TRY">TRY — Turkish Lira</ion-select-option>
+          <ion-select-option value="USD">USD — United States Dollar</ion-select-option>
+          <ion-select-option value="ZAR">ZAR — South African Rand</ion-select-option>
+        </ion-select>
+
+        <p class="converted-amount">&asymp; {{ convertedPrice | number:'1.2-2' }} {{ selectedCurrency }}</p>
+        <p class="conv-note">
+          Exchange rate: 1 JPY = {{ exchangeRate }} {{ selectedCurrency }}
+          <span *ngIf="rateDate">(as of {{ rateDate }})</span> — estimate only, final charge is in JPY.
+        </p>
+      </div>
+
+      <!-- Description -->
+      <div class="description-box">
+        <p class="desc-text">{{ description }}</p>
+      </div>
+
+      <!-- Availability Status -->
+      <div class="status-row">
+        <span>Availability Status:</span>
+        <span class="status-badge" [class.available]="status === 'AVAILABLE'">{{ status }}</span>
+      </div>
+      <p class="cutoff-notice">Pick any open date below — booking closes for the current day after 5:00 PM Japan time.</p>
+
+      <!-- Step 1: Tour Date & Seats -->
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-badge">1</div>
+          <h3>Tour Date & Seats</h3>
+        </div>
+        <div class="step-body">
+          <label class="field-label">Tour Date</label>
+          <ion-input 
+            type="date" 
+            [min]="minDate"
+            [(ngModel)]="tourDate" 
+            (ionChange)="onDateChange()"
+            class="custom-field">
+          </ion-input>
+
+          <!-- Alert: Unavailable or Past Date -->
+          <div class="alert-box error" *ngIf="isDateUnavailable">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            <span>This date is currently unavailable.</span>
+          </div>
+
+          <!-- Alert: Date Held -->
+          <div class="alert-box success" *ngIf="isDateValid">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <span>Date held for you — complete checkout to confirm your reservation.</span>
+          </div>
+
+          <!-- Weather Widget for Selected Date -->
+          <div class="weather-widget-box" *ngIf="selectedDateWeather">
+            <h4>Weather for Your Tour</h4>
+            <p class="w-date">{{ selectedDateWeather.date }}</p>
+            <div class="w-main">
+              <span>{{ selectedDateWeather.icon }} {{ selectedDateWeather.description }}</span>
+              <span class="w-temp">&mdash; High: {{ selectedDateWeather.maxTemp }}°C &middot; Low: {{ selectedDateWeather.minTemp }}°C</span>
+            </div>
+            <p class="w-sub">Rain probability: {{ selectedDateWeather.rainProb }}% &middot; Wind: {{ selectedDateWeather.windSpeed }} km/h</p>
+            <a routerLink="/weather" class="w-link">View extended forecast &rarr;</a>
+          </div>
+
+          <label class="field-label">Participants</label>
+          <ion-input type="number" [(ngModel)]="participants" min="1" class="custom-field"></ion-input>
+        </div>
+      </div>
+
+      <!-- Step 2: Contact Information -->
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-badge">2</div>
+          <h3>Contact Information</h3>
+        </div>
+        <div class="step-body">
+          <label class="field-label">Full Name</label>
+          <ion-input type="text" [(ngModel)]="fullName" placeholder="Your full name" class="custom-field"></ion-input>
+
+          <label class="field-label">Email</label>
+          <ion-input type="email" [(ngModel)]="email" placeholder="you@example.com" class="custom-field"></ion-input>
+
+          <label class="field-label">Phone Number</label>
+          <ion-input type="tel" [(ngModel)]="phoneNumber" placeholder="+81-90-1234-5678" class="custom-field"></ion-input>
+
+          <label class="field-label">Special Requests (optional)</label>
+          <ion-input type="text" [(ngModel)]="specialRequests" class="custom-field"></ion-input>
+        </div>
+      </div>
+
+      <!-- Step 3: Payment Method & Unclickable Disabled Login Button -->
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-badge">3</div>
+          <h3>Payment Method</h3>
+        </div>
+        <div class="step-body">
+          <ion-radio-group [(ngModel)]="paymentMethod">
+            <div class="radio-item">
+              <ion-radio value="paypal"></ion-radio>
+              <span class="radio-text">Paypal</span>
+            </div>
+          </ion-radio-group>
+
+          <!-- Disabled Button When Logged Out -->
+          <ion-button 
+            *ngIf="!isLoggedIn" 
+            color="medium" 
+            expand="block" 
+            class="checkout-btn" 
+            [disabled]="true">
+            LOG IN TO RESERVE
+          </ion-button>
+
+          <!-- Active Proceed Button When Logged In -->
+          <ion-button 
+            *ngIf="isLoggedIn" 
+            color="danger" 
+            expand="block" 
+            class="checkout-btn" 
+            [disabled]="!isDateValid"
+            (click)="proceedToCheckout()">
+            PROCEED TO CHECKOUT
+          </ion-button>
+
+          <ion-button fill="outline" color="light" expand="block" class="back-btn" routerLink="/products">
+            BACK TO TOURS
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Reviews Section -->
+      <div class="reviews-section">
+        <h2>Reviews</h2>
+        <div class="stars-summary">
+          <ion-icon name="star" *ngFor="let s of [1,2,3,4,5]" [class.filled]="s <= averageRating"></ion-icon>
+          <span class="rating-num">{{ averageRating }}</span>
+          <span class="review-count">Based on {{ reviews.length }} review{{ reviews.length === 1 ? '' : 's' }}</span>
+        </div>
+        <p class="review-policy">You can review this tour after completing your booking.</p>
+
+        <div class="review-list">
+          <div class="review-card" *ngFor="let rev of reviews">
+            <div class="rev-user-row">
+              <div class="avatar-circle">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+              <div>
+                <h4 class="rev-user-name">{{ rev.userName }}</h4>
+                <div class="rev-stars">
+                  <ion-icon name="star" *ngFor="let s of [1,2,3,4,5]" [class.filled]="s <= rev.rating"></ion-icon>
+                </div>
+              </div>
+            </div>
+            <p class="rev-comment">{{ rev.comment }}</p>
+            <p class="rev-date">{{ rev.createdAt | date:'mediumDate' }}</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </ion-content>

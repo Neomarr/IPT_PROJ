@@ -1,36 +1,256 @@
-<ion-header [translucent]="true" class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Booking</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="dark">
+    <ion-title>My Reservations</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <div class="empty-booking-container">
-    <!-- Empty State Graphic -->
-    <div class="illustration-wrapper">
-      <div class="drawer-box">
-        <div class="drawer-top"></div>
-        <div class="drawer-body">
-          <div class="folder-tab"></div>
-          <div class="folder-line"></div>
-          <div class="folder-line short"></div>
-        </div>
+<ion-content [fullscreen]="true" class="my-bookings-content">
+  <div class="container">
+    <h1 class="page-title">My Reservations</h1>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val">{{ upcomingCount }}</div>
+        <p>Upcoming Trips</p>
+        <ion-icon name="time-outline" class="icon-upcoming"></ion-icon>
       </div>
-      <div class="speech-bubble">
-        <ion-icon name="chatbubble-ellipses"></ion-icon>
+
+      <div class="stat-card">
+        <div class="stat-val">{{ completedCount }}</div>
+        <p>Completed Trips</p>
+        <ion-icon name="checkmark-circle-outline" class="icon-completed"></ion-icon>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-val">{{ cancelledCount }}</div>
+        <p>Cancelled Trips</p>
+        <ion-icon name="close-circle-outline" class="icon-cancelled"></ion-icon>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-val">{{ allBookings.length }}</div>
+        <p>Total Reservations</p>
+        <ion-icon name="document-text-outline" class="icon-total"></ion-icon>
       </div>
     </div>
 
-    <!-- Message & CTA -->
-    <p class="empty-text">You have no reservations yet.</p>
-    
-    <ion-button routerLink="/products" routerDirection="forward" class="browse-btn">
-      Browse Tours
-    </ion-button>
+    <div class="tabs-row">
+      <button [class.active]="activeTab === 'ALL'" (click)="setTab('ALL')">All Bookings</button>
+      <button [class.active]="activeTab === 'UPCOMING'" (click)="setTab('UPCOMING')">Upcoming</button>
+      <button [class.active]="activeTab === 'COMPLETED'" (click)="setTab('COMPLETED')">Completed</button>
+      <button [class.active]="activeTab === 'CANCELLED'" (click)="setTab('CANCELLED')">Cancelled</button>
+    </div>
 
-   
+    <ion-searchbar 
+      [(ngModel)]="searchQuery" 
+      (ionInput)="applyFilter()" 
+      placeholder="Search by tour or reference..."
+      class="custom-search">
+    </ion-searchbar>
+
+    <div *ngIf="isLoading" class="loading-spinner">
+      <ion-spinner name="crescent" color="danger"></ion-spinner>
+    </div>
+
+    <div *ngIf="!isLoading" class="bookings-list">
+      <div *ngFor="let b of filteredBookings" class="booking-card">
+        
+        <div class="card-header">
+          <div class="tour-thumb">
+            <img [src]="b.tourImage" [alt]="b.tour_name_snapshot" />
+          </div>
+          <div class="tour-info">
+            <h3>{{ b.tour_name_snapshot }}</h3>
+            
+            <div class="badges-row">
+              <span class="badge" [ngClass]="b.status.toLowerCase()">
+                {{ b.status }}
+              </span>
+              <span class="badge payment" [ngClass]="b.payment_status.toLowerCase()">
+                {{ b.payment_status }}
+              </span>
+            </div>
+
+            <p class="ref-num">Reference {{ b.reference }}</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="meta-row">
+            <span>📅 {{ b.booking_date | date:'mediumDate' }}</span>
+            <span>👤 {{ b.participants }} participant{{ b.participants === 1 ? '' : 's' }}</span>
+          </div>
+
+          <div class="price-row">
+            <span class="price-amount">¥{{ b.total_price | number:'1.2-2' }}</span>
+          </div>
+
+          <div class="actions-row">
+            <ion-button fill="outline" color="light" size="small" (click)="openModal(b)">
+              View Reservation
+            </ion-button>
+
+            <div *ngIf="b.status === 'PENDING'">
+              <input #replaceInput type="file" accept="image/*" (change)="onReplaceProof(b, $event)" style="display: none;" />
+              <ion-button color="danger" size="small" (click)="replaceInput.click()">
+                <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                Replace Proof
+              </ion-button>
+            </div>
+
+            <ion-button *ngIf="b.status === 'COMPLETED'" color="danger" size="small" (click)="openReviewModal(b)">
+              <ion-icon name="star-outline" slot="start"></ion-icon>
+              LEAVE A REVIEW
+            </ion-button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Reservation Detail Modal -->
+  <div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()" *ngIf="selectedBooking">
+      
+      <div class="modal-header">
+        <h2>Reservation — {{ selectedBooking.tour_name_snapshot }}</h2>
+        <button class="icon-close-btn" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <table class="details-table">
+          <tr>
+            <td class="col-label">Reference</td>
+            <td class="col-val">{{ selectedBooking.reference }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Tour</td>
+            <td class="col-val">{{ selectedBooking.tour_name_snapshot }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Date</td>
+            <td class="col-val">{{ selectedBooking.booking_date | date:'mediumDate' }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Participants</td>
+            <td class="col-val">{{ selectedBooking.participants }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Status</td>
+            <td class="col-val">
+              <span class="badge" [ngClass]="selectedBooking.status.toLowerCase()">
+                {{ selectedBooking.status }}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="col-label">Payment Status</td>
+            <td class="col-val">
+              <span class="badge payment" [ngClass]="selectedBooking.payment_status.toLowerCase()">
+                {{ selectedBooking.payment_status }}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="col-label">Total Price</td>
+            <td class="col-val">¥{{ selectedBooking.total_price | number:'1.2-2' }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Payment Method</td>
+            <td class="col-val">{{ selectedBooking.paymentMethodName }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Contact Name</td>
+            <td class="col-val">{{ selectedBooking.customer_name || '—' }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Contact Email</td>
+            <td class="col-val">{{ selectedBooking.customer_email || '—' }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Contact Phone</td>
+            <td class="col-val">{{ selectedBooking.customer_phone || '—' }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Special Requests</td>
+            <td class="col-val">{{ selectedBooking.special_requests || '—' }}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="modal-footer">
+        <div *ngIf="selectedBooking.status === 'PENDING'">
+          <input #modalReplaceInput type="file" accept="image/*" (change)="onReplaceProof(selectedBooking, $event)" style="display: none;" />
+          <ion-button color="danger" size="small" (click)="modalReplaceInput.click()">
+            <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+            Replace Proof
+          </ion-button>
+        </div>
+
+        <ion-button 
+          fill="outline" 
+          color="light" 
+          size="small" 
+          [routerLink]="['/products/product-detail', selectedBooking.tour_id]" 
+          (click)="closeModal()">
+          View Tour Page
+        </ion-button>
+
+        <ion-button fill="solid" color="medium" size="small" (click)="closeModal()">
+          Close
+        </ion-button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Leave a Review Modal -->
+  <div class="modal-backdrop" *ngIf="isReviewModalOpen" (click)="closeReviewModal()">
+    <div class="modal-card review-modal" (click)="$event.stopPropagation()" *ngIf="selectedReviewBooking">
+      
+      <div class="modal-header">
+        <h2>Leave a Review — {{ selectedReviewBooking.tour_name_snapshot }}</h2>
+        <button class="icon-close-btn" (click)="closeReviewModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <label class="input-label"><span class="required">*</span> How was your experience?</label>
+        <div class="star-rating-row">
+          <ion-icon 
+            *ngFor="let starIndex of [1, 2, 3, 4, 5]" 
+            [name]="starIndex <= reviewRating ? 'star' : 'star-outline'" 
+            class="star-icon" 
+            [class.active]="starIndex <= reviewRating"
+            (click)="setRating(starIndex)">
+          </ion-icon>
+        </div>
+
+        <label class="input-label"><span class="required">*</span> Tell us about your experience</label>
+        <div class="textarea-wrapper">
+          <textarea 
+            [(ngModel)]="reviewComment" 
+            placeholder="Tell us about your experience..." 
+            maxlength="2000"
+            rows="5"
+            class="custom-textarea">
+          </textarea>
+          <span class="char-count">{{ reviewComment.length }} / 2000</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <ion-button color="danger" size="small" (click)="submitReview()" [disabled]="isSubmittingReview">
+          <ion-spinner *ngIf="isSubmittingReview" name="crescent" slot="start"></ion-spinner>
+          Submit Review
+        </ion-button>
+
+        <ion-button fill="outline" color="light" size="small" (click)="closeReviewModal()">
+          Cancel
+        </ion-button>
+      </div>
+
+    </div>
   </div>
 </ion-content>

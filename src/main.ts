@@ -15,7 +15,7 @@ bootstrapApplication(AppComponent, {
       domain: 'dev-tt0hq6gyqbf8bezl.jp.auth0.com',
       clientId: 'xYwffAlzJzzDM6LJ9k0Md0Xern4EPx1m',
       authorizationParams: {
-        redirect_uri: window.location.origin
+        redirect_uri: 'http://localhost:8100'
       }
     }),
   ],
