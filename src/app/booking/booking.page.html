@@ -69,6 +69,9 @@
               <span class="badge payment" [ngClass]="b.payment_status.toLowerCase()">
                 {{ b.payment_status }}
               </span>
+              <span class="badge pending-cancel" *ngIf="hasPendingCancellation(b)">
+  {{ b.cancellation_requests[0]?.status === 'PENDING' ? 'Cancellation: Pending Review' : 'Cancellation: Processing Refund' }}
+</span>
             </div>
 
             <p class="ref-num">Reference {{ b.reference }}</p>
@@ -90,6 +93,22 @@
               View Reservation
             </ion-button>
 
+            <!-- 24-Hour Notice Warning -->
+            <span class="warning-text" *ngIf="b.status === 'CONFIRMED' && !hasPendingCancellation(b) && isWithin24Hours(b.booking_date)">
+              Cancellation is no longer available because this booking is within 24 hours of the scheduled date.
+            </span>
+
+            <!-- Request Cancellation Button -->
+            <ion-button 
+              *ngIf="b.status === 'CONFIRMED' && !hasPendingCancellation(b) && !isWithin24Hours(b.booking_date)" 
+              fill="outline" 
+              color="danger" 
+              size="small" 
+              (click)="openCancelModal(b)">
+              Request Cancellation
+            </ion-button>
+
+            <!-- Replace Proof Button -->
             <div *ngIf="b.status === 'PENDING'">
               <input #replaceInput type="file" accept="image/*" (change)="onReplaceProof(b, $event)" style="display: none;" />
               <ion-button color="danger" size="small" (click)="replaceInput.click()">
@@ -98,6 +117,7 @@
               </ion-button>
             </div>
 
+            <!-- Leave a Review Button -->
             <ion-button *ngIf="b.status === 'COMPLETED'" color="danger" size="small" (click)="openReviewModal(b)">
               <ion-icon name="star-outline" slot="start"></ion-icon>
               LEAVE A REVIEW
@@ -113,7 +133,6 @@
   <!-- Reservation Detail Modal -->
   <div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeModal()">
     <div class="modal-card" (click)="$event.stopPropagation()" *ngIf="selectedBooking">
-      
       <div class="modal-header">
         <h2>Reservation — {{ selectedBooking.tour_name_snapshot }}</h2>
         <button class="icon-close-btn" (click)="closeModal()">&times;</button>
@@ -181,14 +200,6 @@
       </div>
 
       <div class="modal-footer">
-        <div *ngIf="selectedBooking.status === 'PENDING'">
-          <input #modalReplaceInput type="file" accept="image/*" (change)="onReplaceProof(selectedBooking, $event)" style="display: none;" />
-          <ion-button color="danger" size="small" (click)="modalReplaceInput.click()">
-            <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
-            Replace Proof
-          </ion-button>
-        </div>
-
         <ion-button 
           fill="outline" 
           color="light" 
@@ -202,14 +213,12 @@
           Close
         </ion-button>
       </div>
-
     </div>
   </div>
 
   <!-- Leave a Review Modal -->
   <div class="modal-backdrop" *ngIf="isReviewModalOpen" (click)="closeReviewModal()">
     <div class="modal-card review-modal" (click)="$event.stopPropagation()" *ngIf="selectedReviewBooking">
-      
       <div class="modal-header">
         <h2>Leave a Review — {{ selectedReviewBooking.tour_name_snapshot }}</h2>
         <button class="icon-close-btn" (click)="closeReviewModal()">&times;</button>
@@ -250,7 +259,72 @@
           Cancel
         </ion-button>
       </div>
+    </div>
+  </div>
 
+  <!-- Request Cancellation Modal -->
+  <div class="modal-backdrop" *ngIf="isCancelModalOpen" (click)="closeCancelModal()">
+    <div class="modal-card cancel-modal" (click)="$event.stopPropagation()" *ngIf="selectedCancelBooking">
+      <div class="modal-header">
+        <h2>Request Cancellation — {{ selectedCancelBooking.tour_name_snapshot }}</h2>
+        <button class="icon-close-btn" (click)="closeCancelModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <table class="details-table summary-table">
+          <tr>
+            <td class="col-label">Booking</td>
+            <td class="col-val">{{ selectedCancelBooking.reference }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Tour</td>
+            <td class="col-val">{{ selectedCancelBooking.tour_name_snapshot }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Booking Date</td>
+            <td class="col-val">{{ selectedCancelBooking.booking_date | date:'mediumDate' }}</td>
+          </tr>
+          <tr>
+            <td class="col-label">Refund Amount</td>
+            <td class="col-val highlight-price">¥{{ selectedCancelBooking.total_price | number:'1.2-2' }}</td>
+          </tr>
+        </table>
+
+        <div class="form-group">
+          <label class="input-label"><span class="required">*</span> Reason for Cancellation</label>
+          <select [(ngModel)]="cancelReason" class="custom-select">
+            <option value="Change of plans">Change of plans</option>
+            <option value="Scheduling conflict">Scheduling conflict</option>
+            <option value="Emergency">Emergency</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label"><span class="required">*</span> Refund Method</label>
+          <input type="text" [value]="refundMethodName" disabled class="custom-input disabled" />
+        </div>
+
+        <div class="form-group">
+          <label class="input-label"><span class="required">*</span> Refund Destination</label>
+          <input 
+            type="text" 
+            [(ngModel)]="refundDestination" 
+            placeholder="e.g. your PayPal email, or bank name / account name / account number" 
+            class="custom-input" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <ion-button fill="outline" color="light" size="small" (click)="closeCancelModal()">
+          Go Back
+        </ion-button>
+
+        <ion-button color="danger" size="small" (click)="submitCancellationRequest()" [disabled]="isSubmittingCancel">
+          <ion-spinner *ngIf="isSubmittingCancel" name="crescent" slot="start"></ion-spinner>
+          Submit Cancellation Request
+        </ion-button>
+      </div>
     </div>
   </div>
 </ion-content>

@@ -148,6 +148,7 @@
   .actions-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 10px;
 
     ion-button {
@@ -160,6 +161,7 @@
   display: flex;
   gap: 6px;
   margin-bottom: 4px;
+  flex-wrap: wrap;
 }
 
 .badge {
@@ -177,6 +179,19 @@
 
   &.payment.paid { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
   &.payment.unpaid, &.payment.pending { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+
+  &.pending-cancel {
+    background: rgba(234, 179, 8, 0.2);
+    color: #fde047;
+    border: 1px solid #854d0e;
+    text-transform: none;
+  }
+}
+
+.warning-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.35;
 }
 
 /* Modal Overlay Styling */
@@ -270,7 +285,60 @@
   }
 }
 
-/* Leave a Review Modal Specific Styling */
+/* Cancellation Request Modal Specifics */
+.cancel-modal {
+  .summary-table {
+    background: #0f141d;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+
+    .highlight-price {
+      color: #ffffff;
+      font-weight: 800;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+
+    .input-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 6px;
+
+      .required {
+        color: #ef4444;
+        margin-right: 4px;
+      }
+    }
+
+    .custom-select, .custom-input {
+      width: 100%;
+      background: #0f141d;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      color: #ffffff;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: #ef4444;
+      }
+
+      &.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+/* Leave a Review Modal Specifics */
 .review-modal {
   .input-label {
     display: block;

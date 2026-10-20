@@ -67,16 +67,24 @@ export class BookingPage implements OnInit {
   completedCount: number = 0;
   cancelledCount: number = 0;
 
-  // Reservation Details Modal Control
+  // Reservation Details Modal
   isModalOpen: boolean = false;
   selectedBooking: any = null;
 
-  // Leave a Review Modal Control
+  // Leave a Review Modal
   isReviewModalOpen: boolean = false;
   selectedReviewBooking: any = null;
   reviewRating: number = 5;
   reviewComment: string = '';
   isSubmittingReview: boolean = false;
+
+  // Cancellation Modal & State
+  isCancelModalOpen: boolean = false;
+  selectedCancelBooking: any = null;
+  cancelReason: string = 'Change of plans';
+  refundMethodName: string = 'Paypal';
+  refundDestination: string = '';
+  isSubmittingCancel: boolean = false;
 
   constructor() {
     addIcons({
@@ -113,9 +121,10 @@ export class BookingPage implements OnInit {
   async loadUserBookings() {
     try {
       this.isLoading = true;
+      // Fetch bookings, joining tours, payment_methods, and cancellation_requests
       const { data, error } = await this.supabaseService.client
         .from('bookings')
-        .select('*, tours(*, tour_images(*)), payment_methods(name), payment_proofs(*)')
+        .select('*, tours(*, tour_images(*)), payment_methods(name), payment_proofs(*), cancellation_requests(*)')
         .eq('user_id', this.userId)
         .order('created_at', { ascending: false });
 
@@ -190,6 +199,7 @@ export class BookingPage implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // --- REVIEW MODAL LOGIC ---
   openReviewModal(booking: any) {
     this.selectedReviewBooking = booking;
     this.reviewRating = 5;
@@ -212,46 +222,127 @@ export class BookingPage implements OnInit {
   }
 
   async submitReview() {
-  if (!this.reviewComment.trim()) {
-    alert('Please tell us about your experience before submitting.');
+    if (!this.reviewComment.trim()) {
+      alert('Please tell us about your experience before submitting.');
+      return;
+    }
+
+    if (!this.userId || !this.selectedReviewBooking) {
+      alert('Invalid context. Please log in again.');
+      return;
+    }
+
+    try {
+      this.isSubmittingReview = true;
+      const now = new Date().toISOString();
+
+      const { error } = await this.supabaseService.client
+        .from('reviews')
+        .insert([
+          {
+            user_id: this.userId,
+            tour_id: this.selectedReviewBooking.tour_id,
+            rating: this.reviewRating,
+            comment: this.reviewComment.trim(),
+            updated_at: now
+          }
+        ]);
+
+      if (error) throw error;
+
+      alert('Thank you for leaving a review!');
+      this.closeReviewModal();
+    } catch (err: any) {
+      console.error('Error submitting review:', err);
+      alert('Failed to submit review: ' + (err.message || 'Please try again.'));
+    } finally {
+      this.isSubmittingReview = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  // --- CANCELLATION LOGIC ---
+  isWithin24Hours(bookingDateStr: string): boolean {
+    if (!bookingDateStr) return false;
+    const tourDate = new Date(bookingDateStr).getTime();
+    const now = new Date().getTime();
+    const diffInHours = (tourDate - now) / (1000 * 60 * 60);
+    return diffInHours < 24;
+  }
+
+  hasPendingCancellation(booking: any): boolean {
+  if (!booking.cancellation_requests || booking.cancellation_requests.length === 0) {
+    return false;
+  }
+  
+  const latestReq = booking.cancellation_requests[0];
+  const activeStatuses = ['PENDING', 'APPROVED', 'REFUND_PROCESSING'];
+  
+  return activeStatuses.includes(latestReq.status);
+}
+
+  openCancelModal(booking: any) {
+    this.selectedCancelBooking = booking;
+    this.cancelReason = 'Change of plans';
+    this.refundMethodName = booking.paymentMethodName || 'Paypal';
+    this.refundDestination = booking.customer_email || '';
+    this.isCancelModalOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  closeCancelModal() {
+    this.isCancelModalOpen = false;
+    this.selectedCancelBooking = null;
+    this.cdr.detectChanges();
+  }
+
+  async submitCancellationRequest() {
+  if (!this.refundDestination.trim()) {
+    alert('Please provide your refund destination account (e.g. PayPal email).');
     return;
   }
 
-  if (!this.userId || !this.selectedReviewBooking) {
-    alert('Invalid context. Please log in again.');
+  if (!this.userId || !this.selectedCancelBooking) {
+    alert('Invalid booking selection.');
     return;
   }
+
+  const confirmSubmit = confirm('Submit this cancellation request?\n\nYour refund request will be reviewed by our administrator.');
+  if (!confirmSubmit) return;
 
   try {
-    this.isSubmittingReview = true;
-
+    this.isSubmittingCancel = true;
     const now = new Date().toISOString();
 
     const { error } = await this.supabaseService.client
-      .from('reviews')
+      .from('cancellation_requests')
       .insert([
         {
-          user_id: this.userId,
-          tour_id: this.selectedReviewBooking.tour_id,
-          rating: this.reviewRating,
-          comment: this.reviewComment.trim(),
+          booking_id: this.selectedCancelBooking.id,
+          customer_id: this.userId,
+          reason: this.cancelReason,
+          refund_method_id: this.selectedCancelBooking.payment_method_id || 9,
+          refund_method_name_snapshot: this.refundMethodName,
+          refund_destination: this.refundDestination.trim(),
+          refund_amount: this.selectedCancelBooking.total_price,
+          status: 'PENDING',
           updated_at: now
         }
       ]);
 
     if (error) throw error;
 
-    alert('Thank you for leaving a review!');
-    this.closeReviewModal();
+    alert('Your cancellation request has been submitted successfully! Pending admin approval.');
+    this.closeCancelModal();
+    await this.loadUserBookings();
   } catch (err: any) {
-    console.error('Error submitting review:', err);
-    alert('Failed to submit review: ' + (err.message || 'Please try again.'));
+    console.error('Error submitting cancellation request:', err);
+    alert('Failed to submit cancellation request: ' + (err.message || 'Please try again.'));
   } finally {
-    this.isSubmittingReview = false;
+    this.isSubmittingCancel = false;
     this.cdr.detectChanges();
   }
 }
-
   async onReplaceProof(booking: any, event: any) {
     const file = event.target.files[0];
     if (!file) return;
